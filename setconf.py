@@ -99,7 +99,6 @@ def changefile(filename, key, value):
     file.close()
 
 def test_changefile(function=changefile):
-    print("TEST CHANGEFILE")
     # Test data
     testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
     testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3
@@ -118,12 +117,16 @@ def test_changefile(function=changefile):
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
-    print("NEWCONTENT", newcontent)
-    print("CHANGED", testcontent_changed.split(linesep)[:-1])
     print("Changefile passes: %s" % (passes))
     return passes
 
-def change_multiline(data, key, value, endstring="\n"):
+def change_multiline(data, key, value, endstring=linesep, verbose=True):
+    if key not in data:
+        return data
+    if (endstring != linesep) and (endstring not in data):
+        if verbose:
+            print("Multiline end marker not found: " + endstring)
+        return data
     startpos = data.find(key)
     if endstring in data:
         endpos = data.find(endstring, startpos+1)
@@ -132,36 +135,78 @@ def change_multiline(data, key, value, endstring="\n"):
     before = data[:startpos]
     between = data[startpos:endpos+1]
     after = data[endpos+1:]
-    newbetween = firstpart(between) + value
-    print("BETWEEN:", between)
-    print("NEWBETWEEN:", newbetween)
-    return before + newbetween + after
+    newbetween = changeline(between, value)
+    if between.endswith(linesep):
+        newbetween += linesep
+    result = before + newbetween + after
+    return result
 
 def test_change_multiline():
     passes = True
     # test 1
+    testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
+    testcontent_changed = "keys := found" + linesep + "dog = found" + linesep * 3
+    a = change_multiline(testcontent, "keys", "found")
+    b = testcontent_changed
+    extracheck = testcontent.replace("missing", "found") == testcontent_changed
+    passes = passes and a == b and extracheck
+    if not passes: print("FAIL1")
+    # test 2
     testcontent = 'blabla\nOST=(a\nb)\n\nblabla'
     testcontent_changed = 'blabla\nOST=(c d)\n\nblabla'
     a = change_multiline(testcontent, "OST", "(c d)", ")")
     b = testcontent_changed
     passes = passes and a == b
-    print("TEST1", passes)
-    # test 2
+    if not passes: print("FAIL2")
+    # test 3
     testcontent = 'blabla=1'
     testcontent_changed = 'blabla=2'
     a = change_multiline(testcontent, "blabla", "2")
     b = testcontent_changed
     passes = passes and a == b
-    print("TEST2", passes)
-    # test 3
-    testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
-    testcontent_changed = "keys := found" + linesep + "dog = found" + linesep * 3
-    a = change_multiline(testcontent, "keys", "found")
+    if not passes: print("FAIL3")
+    # test 4
+    testcontent = "\n"
+    testcontent_changed = "\n"
+    a = change_multiline(testcontent, "blabla", "ost")
     b = testcontent_changed
-    print("A", a)
-    print("B", b)
     passes = passes and a == b
-    print("TEST3", passes)
+    if not passes: print("FAIL4")
+    # test 5
+    testcontent = ""
+    testcontent_changed = ""
+    a = change_multiline(testcontent, "blabla", "ost")
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL5")
+    # test 6
+    testcontent = "a=(1, 2, 3"
+    testcontent_changed = "a=(1, 2, 3"
+    a = change_multiline(testcontent, "a", "(4, 5, 6)", ")", verbose=False)
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL6")
+    # test 7
+    testcontent = "a=(1, 2, 3\nb=(7, 8, 9)"
+    testcontent_changed = "a=(4, 5, 6)"
+    a = change_multiline(testcontent, "a", "(4, 5, 6)", ")")
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL7")
+    # test 8
+    testcontent = "a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)"
+    testcontent_changed = "a=(0, 0, 0)\nb=(4, 5, 6)\nc=(7, 8, 9)"
+    a = change_multiline(testcontent, "b", "(4, 5, 6)", ")")
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL8")
+    # test 9
+    testcontent = "a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n"
+    testcontent_changed = "a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n"
+    a = change_multiline(testcontent, "b", "(4, 5, 6)", "]", verbose=False)
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL9")
     # result
     print("Change multiline passes: %s" % (passes))
     return passes
@@ -181,7 +226,6 @@ def changefile_multiline(filename, key, value, endstring="\n"):
     file.close()
 
 def test_changefile_multiline():
-    print("TEST_CHANGEFILE_MULTILINE")
     # Test data
     testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
     testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3
@@ -200,11 +244,7 @@ def test_changefile_multiline():
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed
-    print("NEWCONTENT:", newcontent)
-    print("CHANGED:", testcontent_changed)
-    print("A", passes)
     passes = passes and test_changefile(changefile_multiline)
-    print("B", passes)
     print("Changefile multiline passes: %s" % (passes))
     return passes
 
@@ -227,20 +267,23 @@ def main():
         if args[0] in ["-t", "--test"]:
             tests()
         elif args[0] in ["-h", "--help"]:
-            print("setconf changes a key in a textfile to a given value")
+            print("setconf " + VERSION)
+            print("")
+            print("Changes a key in a textfile to a given value")
             print("")
             print("Options:")
-            print("-h or --help\tgive this text")
-            print("-t or --test\tinternal self test")
-            print("-v or --version\tprint version number")
+            print("\t-h or --help\tgive this text")
+            print("\t-t or --test\tinternal self test")
+            print("\t-v or --version\tprint version number")
             print("")
             print("Arguments:")
-            print("\ta filename, a key and a value")
-            print("\tor: a filename, a key, a value and the end string for multiline values, like \")\"")
+            print("\ta filename, a key, a value and")
+            print("\toptionally an end string for a multiline value, like \")\" or \"]\"")
             print("")
             print("Examples:")
             print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
-            print("\tsetconf PKGBUILD sha256sums \"('fsdaffsda' 'sfdasfdasafd')\" \")\"")
+            print("\tsetconf PKGBUILD sha256sums \"('fsdaffsda' 'sfdasfdasafd')\" )")
+            print("")
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
     elif len(args) == 3:
