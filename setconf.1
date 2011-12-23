@@ -1,0 +1,66 @@
+.\"             -*-Nroff-*-
+.\"
+.TH "setconf" 1 "31 May 2009" "" ""
+.SH NAME
+setconf \- change settings in configuration textfiles
+.SH SYNOPSIS
+.B setconf
+filename key value
+.SH DESCRIPTION
+If there's a textfile with fields like these:
+.sp
+.B "CC=gcc"
+.sp
+.B "lights := on"
+.sp
+.B "compileToday: true"
+.sp
+.B "anumber = 42"
+.sp
+.B "cabal ==1.2.3"
+.sp
+Setconf can change the values to something else.
+The value related to the first key found will be changed to the given value.
+.sp
+For example,
+.B "CC "
+is a key and
+.B "gcc "
+is a value.
+.SH "EXAMPLES"
+.B setconf
+- by itself returns errorcode 1 at exit
+.sp
+.B setconf Makefile CC gcc
+- sets CC=gcc in Makefile
+.sp
+.B setconf test
+- performs self-testing
+.PP
+.SH OPTIONS
+.TP
+.B \-\-version
+displays the current version number
+.TP
+.B \-\-help
+displays brief informative text about usage
+.PP
+.SH "WHY"
+.sp
+Aims to solve a tiny problem properly instead of a thousand problems halfway, in true UNIX-spirit
+.sp
+Creates a line that is very easy to read, as opposed to using sed for the same task
+.sp
+Should be clear from the syntax what is being done
+.sp
+Only one small executable, not a big package
+.SH "SEE ALSO"
+.BR sed (1)
+.BR make (1)
+.SH BUGS
+Only unknown bugs so far.
+.SH VERSION
+0.2
+.SH AUTHOR
+.B setconf
+was written by Alexander Rødseth <rodseth@gmail.com>.
