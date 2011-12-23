@@ -1,0 +1,6 @@
+#!/bin/sh
+rm Makefile setconf *.cpp *.hpp *.ss.py
+shedskin setconf.py
+make CPPFLAGS="-Os -march=native -fomit-frame-pointer"
+#strip setconf
+#upx --ultra-brute setconf
