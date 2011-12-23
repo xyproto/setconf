@@ -128,11 +128,14 @@ def change_multiline(data, key, value, endstring="\n"):
     if endstring in data:
         endpos = data.find(endstring, startpos+1)
     else:
-        endpos = len(data)
+        endpos = len(data) - 1
     before = data[:startpos]
     between = data[startpos:endpos+1]
     after = data[endpos+1:]
-    return before + firstpart(between) + value + after
+    newbetween = firstpart(between) + value
+    print("BETWEEN:", between)
+    print("NEWBETWEEN:", newbetween)
+    return before + newbetween + after
 
 def test_change_multiline():
     passes = True
