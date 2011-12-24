@@ -5,7 +5,7 @@
 setconf \- change settings in configuration textfiles
 .SH SYNOPSIS
 .B setconf
-filename key value
+filename key value [end string for a multiline value]
 .SH DESCRIPTION
 If there's a textfile with fields like these:
 .sp
@@ -34,16 +34,25 @@ is a value.
 .B setconf Makefile CC gcc
 - sets CC=gcc in Makefile
 .sp
-.B setconf test
+.B setconf --test
 - performs self-testing
+.sp
+.B setconf app.py THREENUMS "[1, 2, 3]" ]
+.sp
+  Multiline replacement, from key (THREENUMS) to endstring (])
+  with the given value ([1, 2, 3]), regardless of how many lines
+  the previous value spans over. Also useful for md5sums in PKGBUILD files.
 .PP
 .SH OPTIONS
 .TP
-.B \-\-version
+.B \-v or\-\-version
 displays the current version number
 .TP
-.B \-\-help
+.B \-h or \-\-help
 displays brief informative text about usage
+.TP
+.B \-t or \-\-test
+performs internal self testing
 .PP
 .SH "WHY"
 .sp
@@ -63,4 +72,4 @@ Only unknown bugs so far.
 0.3
 .SH AUTHOR
 .B setconf
-was written by Alexander Rødseth <rodseth@gmail.com>.
+was written by  Alexander Rødseth <rodseth@gmail.com.
