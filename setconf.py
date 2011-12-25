@@ -117,7 +117,8 @@ def test_changefile(function=changefile):
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
-    print("Changefile passes: %s" % (passes))
+    fname = function.__name__
+    print("Changefile (%s) passes: %s" % (fname, passes))
     return passes
 
 def change_multiline(data, key, value, endstring=linesep, verbose=True):
@@ -207,6 +208,34 @@ def test_change_multiline():
     b = testcontent_changed
     passes = passes and a == b
     if not passes: print("FAIL9")
+    # test 10
+    testcontent = """
+source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
+        "maniadrive.desktop"
+        "license.txt"
+        "https://admin.fedoraproject.org/pkgdb/appicon/show/Maniadrive")
+md5sums=('5592eaf4b8c4012edcd4f0fc6e54c09c'
+         '064639f1b48ec61e46c524ae31eec520'
+         'afa5fac56d01430e904dd6716d84f4bf'
+         '9b5fc9d981d460a7b0c9d78e75c5aeca')
+
+build() {
+  cd "$srcdir/ManiaDrive-$pkgver-linux-i386"
+""" 
+    testcontent_changed = """
+source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
+        "maniadrive.desktop"
+        "license.txt"
+        "https://admin.fedoraproject.org/pkgdb/appicon/show/Maniadrive")
+md5sums=('123abc' 'abc123')
+
+build() {
+  cd "$srcdir/ManiaDrive-$pkgver-linux-i386"
+"""
+    a = change_multiline(testcontent, "md5sums", "('123abc' 'abc123')", ")", verbose=False)
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL10")
     # result
     print("Change multiline passes: %s" % (passes))
     return passes
