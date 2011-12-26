@@ -29,19 +29,23 @@ is a key and
 is a value.
 .SH "EXAMPLES"
 .B setconf
-- by itself returns errorcode 1 at exit
+  Exits with errorcode 1
+.sp
+.B setconf setconf Makefile.defaults NETSURF_USE_HARU_PDF NO
+  In Makefile.defaults, set NETSURF_USE_HARU_PDF to NO
 .sp
 .B setconf Makefile CC gcc
-- sets CC=gcc in Makefile
+  Sets CC=gcc in Makefile
 .sp
-.B setconf --test
-- performs self-testing
+.B setconf PKGBUILD sha256sums \(dq('123abc' 'abc123')\(dq ')'
+  In the PKGBUILD file, set the value for the sha256sums keys to
+  ('123abc' 'abc123') regardless of how many lines the previous value
+  spans, since the end string ')' is given.
 .sp
-.B setconf app.py THREENUMS "[1, 2, 3]" ]
-.sp
-  Multiline replacement, from key (THREENUMS) to endstring (])
-  with the given value ([1, 2, 3]), regardless of how many lines
-  the previous value spans over. Also useful for md5sums in PKGBUILD files.
+.B setconf app.py NUMS \(dq[1, 2, 3]\(dq ']'
+  Multiline replacement, replacing the text from the value belonging to the
+  key NUMS to the endstring ] with the value [1, 2, 3], regardless
+  of how many lines the previous value spans.
 .PP
 .SH OPTIONS
 .TP
@@ -49,7 +53,7 @@ is a value.
 displays the current version number
 .TP
 .B \-h or \-\-help
-displays brief informative text about usage
+displays brief usage information
 .TP
 .B \-t or \-\-test
 performs internal self testing
@@ -60,16 +64,16 @@ Aims to solve a tiny problem properly instead of a thousand problems halfway, in
 .sp
 Creates a line that is very easy to read, as opposed to using sed for the same task
 .sp
-Should be clear from the syntax what is being done
+It should be clear from the syntax what is being done
 .sp
 Only one small executable, not a big package
 .SH "SEE ALSO"
 .BR sed (1)
 .BR make (1)
 .SH BUGS
-Only unknown bugs so far.
+Only unknown bugs so far. Bugs can be reported at https://github.com/xyproto/setconf/issues.
 .SH VERSION
 0.3
 .SH AUTHOR
 .B setconf
-was written by  Alexander Rødseth <rodseth@gmail.com.
+was written by  Alexander Rødseth <rodseth@gmail.com>

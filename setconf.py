@@ -98,7 +98,7 @@ def changefile(filename, key, value):
     file.write(linesep.join(change(lines, key, value)) + linesep)
     file.close()
 
-def test_changefile(function=changefile):
+def test_changefile():
     # Test data
     testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
     testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3
@@ -108,8 +108,8 @@ def test_changefile(function=changefile):
     file.write(testcontent)
     file.close()
     # Change the file with changefile
-    function(filename, "keys", "found")
-    function(filename, "dog", "missing")
+    changefile(filename, "keys", "found")
+    changefile(filename, "dog", "missing")
     # Read the file
     file = open(filename, "r")
     newcontent = file.read().split(linesep)[:-1]
@@ -117,8 +117,7 @@ def test_changefile(function=changefile):
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
-    fname = function.__name__
-    print("Changefile (%s) passes: %s" % (fname, passes))
+    print("Changefile passes: %s" % (passes))
     return passes
 
 def change_multiline(data, key, value, endstring=linesep, verbose=True):
@@ -273,7 +272,6 @@ def test_changefile_multiline():
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed
-    passes = passes and test_changefile(changefile_multiline)
     print("Changefile multiline passes: %s" % (passes))
     return passes
 
@@ -301,9 +299,9 @@ def main():
             print("Changes a key in a textfile to a given value")
             print("")
             print("Options:")
-            print("\t-h or --help\tgive this text")
-            print("\t-t or --test\tinternal self test")
-            print("\t-v or --version\tprint version number")
+            print("\t-h or --help\t\tthis text")
+            print("\t-t or --test\t\tinternal self test")
+            print("\t-v or --version\t\tversion number")
             print("")
             print("Arguments:")
             print("\ta filename, a key, a value and optionally:")
@@ -311,7 +309,9 @@ def main():
             print("")
             print("Examples:")
             print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
-            print("\tsetconf PKGBUILD sha256sums \"('fsdaffsda' 'sfdasfdaafd')\" ')'")
+            print("\tsetconf Makefile CC gcc")
+            print("\tsetconf PKGBUILD sha256sums \"('123abc' 'abc123')\" ')'")
+            print("\tsetconf app.py NUMS \"[1, 2, 3]\" ']'")
             print("")
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
