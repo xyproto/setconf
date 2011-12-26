@@ -1,4 +1,4 @@
 setconf
 =============
 
-Setconf is a small utility to change settings in configuration textfiles.
+Setconf is a small utility for changing settings in configuration textfiles.
