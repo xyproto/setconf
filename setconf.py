@@ -3,25 +3,45 @@
 # Alexander Rødseth <rodseth@gmail.com>
 # May 2009
 # Dec 2011
+# Jan 2012
 # GPL
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.3"
+VERSION = "0.3.1"
 
 def firstpart(line, including_assignment=True):
-    # Supports ==, :=, ::, = and :. They are matched in this order.
-    assignments = ['==', ':=', '::', '=', ':']
     if not line.strip():
         return None
-    for assignment in assignments:
-        if assignment in line:
-            if including_assignment:
-                return line.split(assignment, 1)[0] + assignment
-            else:
-                return line.split(assignment, 1)[0]
+    # These assignments are supported, in this order
+    assignments = ['==', '=', ':=', '::', ':']
+    assignment = ""
+    found = []
+    for ass in assignments:
+        if ass in line:
+            found.append(ass)
+    if len(found) == 1:
+        # Only one assignment were found
+        assignment = found[0]
+    elif found: # > 1
+        # If several assignments are found, use the first one
+        firstpos = len(line)
+        firstassignment = ""
+        for ass in found:
+            pos = line.index(ass)
+            if pos < firstpos:
+                firstpos = pos
+                firstassignment = ass
+        assignment = firstassignment
+    # Return the "key" part of the line
+    if assignment:
+        if including_assignment:
+            return line.split(assignment, 1)[0] + assignment
+        else:
+            return line.split(assignment, 1)[0]
+    # No assignments were found
     return None
 
 def changeline(line, newvalue):
@@ -44,6 +64,7 @@ def test_changeline():
     passes = passes and changeline("CC=g++", "baffled") == "CC=baffled"
     passes = passes and changeline("CC =\t\tg++", "baffled") == "CC =\tbaffled"
     passes = passes and changeline("cabal ==1.2.3", "1.2.4") == "cabal ==1.2.4"
+    passes = passes and changeline("TMPROOT=${TMPDIR:=/tmp}", "/nice/pants") == "TMPROOT=/nice/pants"
     print("Changeline passes: %s" % (passes))
     return passes
 
