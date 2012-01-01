@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" /><title>Setconf</title>
+
+<meta content="Alexander Rødseth" name="author" />
+</head>
+<body style="direction: ltr; background-color: rgb(242, 248, 246); color: rgb(0, 0, 0);" alink="red" link="#ff6600" vlink="#993300">
+<div style="margin-left: 40px;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"></span></big></big>
+<big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"></span></big></big></div>
+<div style="color: white; margin-left: 80px;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"><br />
+<big style="color: rgb(51, 51, 51);"><big>Setconf</big></big></span></big></big><br />
+<br />
+</div>
+<div style="margin-left: 40px;">
+<br /></div>
+<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">What
+is it?</span>
+</div>
+<div style="margin-left: 200px;"><br />
+Setconf is a small
+utility to change settings in configuration textfiles.<br />
+<br />
+</div>
+<div style="margin-left: 120px; background-color: white; color: black;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">What
+can it do?</span>
+</div>
+<div style="margin-left: 200px;"><br />
+If there's a textfile
+with
+fields like these:<br />
+<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">&nbsp;&nbsp;&nbsp;
+CC=abc</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
+<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">&nbsp;&nbsp;&nbsp;
+lights := on</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
+<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">&nbsp;&nbsp;&nbsp;
+compile_today: true</span><br />
+<br />
+Setconf can change the values to something else. It will take the first
+key it finds and change the value.<br />
+<br />
+Setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
+<br />
+<br />
+</div>
+<div style="margin-left: 120px; color: white; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; color: black;"><span style="font-weight: bold;">Example</span></span><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;"></span>
+</div>
+<div style="margin-left: 200px;"><br />
+You are writing a PKGBUILD
+for Arch and wish to change a setting without using sed.<br />
+Let's say you want to change CC from abc to gcc and that "CC=gcc make"
+doesn't cut it, for some reason.<br />
+<br />
+Then you can use the following command:<br /><br />
+<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
+setconf Makefile CC gcc</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
+<br />
+</div>
+<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Why?</span>
+</div>
+<div style="margin-left: 200px;">
+<ul>
+<li>It aims to solve a tiny problem properly instead of a
+thousand problems halfway, in true UNIX-spirit</li><li>It creates a line that is very easy to read, as opposed to
+using
+sed for the same task</li>
+<li>It should be very clear from the syntax what is being done
+</li>
+<li>It's only one small executable, not a big package</li>
+</ul>
+</div>
+<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Which arguments are supported?</span>
+</div>
+<div style="margin-left: 200px;">
+    <br />
+    Setconf ordinarily takes a filename, key and a new value for that key.<br />
+    One can also give an optional end string, for replacing multiline values.<br />
+    <br />
+    See the man page or --help output for more information.
+    <br />
+    <br />
+</div>
+
+<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Source code and bug tracker</span>
+</div>
+<div style="margin-left: 200px;">
+    <br />
+    The source and issue tracker is available at <a href="https://github.com/xyproto/setconf">github</a>.<br />
+    <br />
+<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
+    git clone git://github.com/xyproto/setconf.git</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
+    <br />
+</div>
+
+<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Installation</span>
+</div>
+<div style="margin-left: 200px;">
+    <br />
+    Install the <a href="http://aur.archlinux.org/packages.php?ID=25170">AUR package</a> or download the <a href="http://code.google.com/p/shedskin/">Shedskin</a>-compatible source for <a href="http://setconf.roboticoverlords.org/setconf-0.3.1.tbz2">Setconf 0.3.1</a>.<br />
+</div>
+
+<div style="text-align: right;"><span style="font-size: 0.8em">Alexander Rødseth 2009</span></div>
+</body></html>
