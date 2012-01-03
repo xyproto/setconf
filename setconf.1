@@ -1,6 +1,6 @@
 .\"             -*-Nroff-*-
 .\"
-.TH "setconf" 1 "01 Jan 2012" "" ""
+.TH "setconf" 1 "03 Jan 2012" "" ""
 .SH NAME
 setconf \- change settings in configuration textfiles
 .SH SYNOPSIS
@@ -43,9 +43,13 @@ is a value.
   spans, since the end string ')' is given.
 .sp
 .B setconf app.py NUMS \(dq[1, 2, 3]\(dq ']'
-  Multiline replacement, replacing the text from the value belonging to the
-  key NUMS to the endstring ] with the value [1, 2, 3], regardless
-  of how many lines the previous value spans.
+  Multiline replacement, replacing the text from the value belonging
+  to the key NUMS to the endstring ] with the value [1, 2, 3],
+  regardless of how many lines the previous value spans.
+.sp
+.B setconf my.conf x=1
+  Sets x to 1 in my.conf, even if my.conf uses a different assignment,
+  like x := 42, x : 42, x == 42 or x :: 42.
 .PP
 .SH OPTIONS
 .TP
@@ -73,7 +77,7 @@ Only one small executable, not a big package
 .SH BUGS
 Only unknown bugs so far. Bugs can be reported at https://github.com/xyproto/setconf/issues.
 .SH VERSION
-0.3.1
+0.3.2
 .SH AUTHOR
 .B setconf
 was written by  Alexander Rødseth <rodseth@gmail.com>
