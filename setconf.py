@@ -10,7 +10,7 @@ from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 
 def firstpart(line, including_assignment=True):
     if not line.strip():
@@ -155,7 +155,7 @@ def change_multiline(data, key, value, endstring=linesep, verbose=True):
         endpos = len(data) - 1
     before = data[:startpos]
     between = data[startpos:endpos+1]
-    after = data[endpos+1:]
+    after = data[endpos+len(endstring):]
     newbetween = changeline(between, value)
     if between.endswith(linesep):
         newbetween += linesep
@@ -256,6 +256,13 @@ build() {
     b = testcontent_changed
     passes = passes and a == b
     if not passes: print("FAIL10")
+    # test 11
+    testcontent = "x=(0, 0, 0)\nCHEESE\nz=2\n"
+    testcontent_changed = "x=(4, 5, 6)\nz=2\n"
+    a = change_multiline(testcontent, "x", "(4, 5, 6)", "CHEESE", verbose=False)
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL11")
     # result
     print("Change multiline passes: %s" % (passes))
     return passes
@@ -319,25 +326,34 @@ def main():
             print("")
             print("Changes a key in a textfile to a given value")
             print("")
+            print("Syntax:")
+            print("\tsetconf filename key value [end string for multiline value]")
+            print("")
             print("Options:")
             print("\t-h or --help\t\tthis text")
             print("\t-t or --test\t\tinternal self test")
             print("\t-v or --version\t\tversion number")
             print("")
-            print("Arguments:")
-            print("\ta filename, a key, a value and optionally:")
-            print("\tan end string for a multiline value, like ')' or \"]\"")
-            print("")
             print("Examples:")
             print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
             print("\tsetconf Makefile CC gcc")
+            print("\tsetconf my.conf x=42")
             print("\tsetconf PKGBUILD sha256sums \"('123abc' 'abc123')\" ')'")
             print("\tsetconf app.py NUMS \"[1, 2, 3]\" ']'")
             print("")
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
+    elif len(args) == 2:
+        # Single line replace ("x=123")
+        filename = args[0]
+        keyvalue = args[1]
+        if "=" in keyvalue:
+            key, value = keyvalue.split("=", 1)
+            changefile(filename, key, value)
+        else:
+            sysexit(2)
     elif len(args) == 3:
-        # Single line replace
+        # Single line replace ("x 123")
         filename = args[0]
         key = args[1]
         value = args[2]
