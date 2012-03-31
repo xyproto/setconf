@@ -4,16 +4,21 @@
 # May 2009
 # Dec 2011
 # Jan 2012
+# Mar 2012
 # GPL
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.3.2"
+VERSION = "0.4"
 
 def firstpart(line, including_assignment=True):
-    if not line.strip():
+    stripline = line.strip()
+    if not stripline:
+        return None
+    # Skip lines that start with #, // or /*
+    if (stripline[0] == "#") or (stripline[:2] in ["//", "/*"]):
         return None
     # These assignments are supported, in this order
     assignments = ['==', '=', ':=', '::', ':']
@@ -65,6 +70,10 @@ def test_changeline():
     passes = passes and changeline("CC =\t\tg++", "baffled") == "CC =\tbaffled"
     passes = passes and changeline("cabal ==1.2.3", "1.2.4") == "cabal ==1.2.4"
     passes = passes and changeline("TMPROOT=${TMPDIR:=/tmp}", "/nice/pants") == "TMPROOT=/nice/pants"
+    passes = passes and changeline("    # ost = 2", "3") == "    # ost = 2"
+    passes = passes and changeline(" // ost = 2", "3") == " // ost = 2"
+    passes = passes and changeline("  ost = 2", "3") == "  ost = 3"
+    passes = passes and changeline("   /* ost = 2 */", "3") == "   /* ost = 2 */"
     print("Changeline passes: %s" % (passes))
     return passes
 
