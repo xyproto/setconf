@@ -3,6 +3,8 @@ setconf
 
 Setconf is a small utility for changing settings in configuration textfiles.
 
+Patches are welcome.
+
 TODO
 ----
 * A way to change the n'th occurence of a configuration option
