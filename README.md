@@ -13,6 +13,7 @@ TODO
   the configuration option is missing
 * Rewrite in Go?
 * New logo?
+* Add support for => as well
 
 Changes from 0.3.2 to 0.4 (released)
 ------------------------------------
