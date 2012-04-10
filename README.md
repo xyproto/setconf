@@ -14,6 +14,7 @@ TODO
 * Rewrite in Go?
 * New logo?
 * Add support for => as well
+* Add support for changing values of "#define" and "(setq" as well?
 
 Changes from 0.3.2 to 0.4 (released)
 ------------------------------------
