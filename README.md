@@ -13,8 +13,12 @@ TODO
   the configuration option is missing
 * Rewrite in Go?
 * New logo?
-* Add support for => as well
 * Add support for changing values of "#define" and "(setq" as well?
+
+Changes from 0.4 to 0.5 (released)
+----------------------------------
+* Add support for => as well
+* Fixed a bug where comments were not ignored for multiline values
 
 Changes from 0.3.2 to 0.4 (released)
 ------------------------------------

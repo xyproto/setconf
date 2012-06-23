@@ -5,13 +5,14 @@
 # Dec 2011
 # Jan 2012
 # Mar 2012
+# Jun 2012
 # GPL
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.4"
+VERSION = "0.5"
 
 def firstpart(line, including_assignment=True):
     stripline = line.strip()
@@ -21,7 +22,7 @@ def firstpart(line, including_assignment=True):
     if (stripline[0] == "#") or (stripline[:2] in ["//", "/*"]):
         return None
     # These assignments are supported, in this order
-    assignments = ['==', '=', ':=', '::', ':']
+    assignments = ['==', '=', ':=', '::', ':', '=>']
     assignment = ""
     found = []
     for ass in assignments:
@@ -150,20 +151,28 @@ def test_changefile():
     print("Changefile passes: %s" % (passes))
     return passes
 
-def change_multiline(data, key, value, endstring=linesep, verbose=True):
+def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfrom=0):
     if key not in data:
         return data
     if (endstring != linesep) and (endstring not in data):
         if verbose:
             print("Multiline end marker not found: " + endstring)
         return data
-    startpos = data.find(key)
+    startpos = data.find(key, searchfrom)
     if endstring in data:
         endpos = data.find(endstring, startpos+1)
     else:
         endpos = len(data) - 1
     before = data[:startpos]
     between = data[startpos:endpos+1]
+
+    linestartpos = data[:startpos].rfind(linesep) + 1
+    line = data[linestartpos:endpos+1]
+    # If the first part of the line is not a key (could be because it's commented out)...
+    if not firstpart(line):
+        # Search again, from endpos this time
+        return change_multiline(data, key, value, endstring, verbose, endpos)
+ 
     after = data[endpos+len(endstring):]
     newbetween = changeline(between, value)
     if between.endswith(linesep):
@@ -272,6 +281,13 @@ build() {
     b = testcontent_changed
     passes = passes and a == b
     if not passes: print("FAIL11")
+    # test 12
+    testcontent = "# md5sum=('abc123')\nmd5sum=('def456')\nmd5sum=('ghi789')\n"
+    testcontent_changed = "# md5sum=('abc123')\nmd5sum=('OST')\nmd5sum=('ghi789')\n"
+    a = change_multiline(testcontent, "md5sum", "('OST')", "\n", verbose=False)
+    b = testcontent_changed
+    passes = passes and a == b
+    if not passes: print("FAIL12")
     # result
     print("Change multiline passes: %s" % (passes))
     return passes
