@@ -12,7 +12,14 @@ TODO
 * A way to insert a configuration option at the end of a file if
   the configuration option is missing
 * Add support for changing values of "#define" and "(setq" as well?
+* Manipulate bytes, not strings or lines
 * Rewrite in Go?
+
+Changes from 0.5 to 0.5.1 (released)
+------------------------------------
+* Fixed a problem with => assignments
+* Changed the way files are opened with open()
+* Added more tests relating to ascii/utf-8
 
 Changes from 0.4 to 0.5 (released)
 ----------------------------------

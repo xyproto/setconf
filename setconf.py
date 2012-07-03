@@ -6,13 +6,14 @@
 # Jan 2012
 # Mar 2012
 # Jun 2012
+# Jul 2012
 # GPL
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.5"
+VERSION = "0.5.1"
 
 def firstpart(line, including_assignment=True):
     stripline = line.strip()
@@ -22,7 +23,7 @@ def firstpart(line, including_assignment=True):
     if (stripline[0] == "#") or (stripline[:2] in ["//", "/*"]):
         return None
     # These assignments are supported, in this order
-    assignments = ['==', '=', ':=', '::', ':', '=>']
+    assignments = ['==', '=>', '=', ':=', '::', ':']
     assignment = ""
     found = []
     for ass in assignments:
@@ -53,9 +54,9 @@ def firstpart(line, including_assignment=True):
 def changeline(line, newvalue):
     first = firstpart(line)
     if first:
-        if "= " in line or ": " in line:
+        if "= " in line or ": " in line or "> " in line:
             return first + " " + newvalue
-        elif "=\t" in line or ":\t" in line:
+        elif "=\t" in line or ":\t" in line or ">\t" in line:
             return first + "\t" + newvalue
         else:
             return first + newvalue
@@ -75,6 +76,7 @@ def test_changeline():
     passes = passes and changeline(" // ost = 2", "3") == " // ost = 2"
     passes = passes and changeline("  ost = 2", "3") == "  ost = 3"
     passes = passes and changeline("   /* ost = 2 */", "3") == "   /* ost = 2 */"
+    passes = passes and changeline("æøå =>\t123", "256") == "æøå =>\t256"
     print("Changeline passes: %s" % (passes))
     return passes
 
@@ -117,7 +119,7 @@ tea := yes
 def changefile(filename, key, value):
     # Read the file
     try:
-        file = open(filename)
+        file = open(filename, encoding="utf-8", errors="surrogateescape")
         data = file.read()
         lines = data.split(linesep)[:-1]
         file.close()
@@ -131,8 +133,8 @@ def changefile(filename, key, value):
 
 def test_changefile():
     # Test data
-    testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
-    testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3
+    testcontent = "keys := missing" + linesep + "døg = found" + linesep * 3 + "æøåÆØÅ"
+    testcontent_changed = "keys := found" + linesep + "døg = missing" + linesep * 3 + "æøåÆØÅ"
     filename = "/tmp/test_changefile.txt"
     # Write the testfile
     file = open(filename, "w")
@@ -140,7 +142,7 @@ def test_changefile():
     file.close()
     # Change the file with changefile
     changefile(filename, "keys", "found")
-    changefile(filename, "dog", "missing")
+    changefile(filename, "døg", "missing")
     # Read the file
     file = open(filename, "r")
     newcontent = file.read().split(linesep)[:-1]
@@ -191,23 +193,23 @@ def test_change_multiline():
     passes = passes and a == b and extracheck
     if not passes: print("FAIL1")
     # test 2
-    testcontent = 'blabla\nOST=(a\nb)\n\nblabla'
-    testcontent_changed = 'blabla\nOST=(c d)\n\nblabla'
+    testcontent = 'blabla\nOST=(a\nb)\n\nblabla\nÆØÅ'
+    testcontent_changed = 'blabla\nOST=(c d)\n\nblabla\nÆØÅ'
     a = change_multiline(testcontent, "OST", "(c d)", ")")
     b = testcontent_changed
     passes = passes and a == b
     if not passes: print("FAIL2")
     # test 3
-    testcontent = 'blabla=1'
-    testcontent_changed = 'blabla=2'
-    a = change_multiline(testcontent, "blabla", "2")
+    testcontent = 'bläblä=1'
+    testcontent_changed = 'bläblä=2'
+    a = change_multiline(testcontent, "bläblä", "2")
     b = testcontent_changed
     passes = passes and a == b
     if not passes: print("FAIL3")
     # test 4
     testcontent = "\n"
     testcontent_changed = "\n"
-    a = change_multiline(testcontent, "blabla", "ost")
+    a = change_multiline(testcontent, "blablañ", "ost")
     b = testcontent_changed
     passes = passes and a == b
     if not passes: print("FAIL4")
@@ -250,7 +252,7 @@ def test_change_multiline():
     testcontent = """
 source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
         "maniadrive.desktop"
-        "license.txt"
+        "ñlicense.txt"
         "https://admin.fedoraproject.org/pkgdb/appicon/show/Maniadrive")
 md5sums=('5592eaf4b8c4012edcd4f0fc6e54c09c'
          '064639f1b48ec61e46c524ae31eec520'
@@ -263,7 +265,7 @@ build() {
     testcontent_changed = """
 source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
         "maniadrive.desktop"
-        "license.txt"
+        "ñlicense.txt"
         "https://admin.fedoraproject.org/pkgdb/appicon/show/Maniadrive")
 md5sums=('123abc' 'abc123')
 
@@ -295,7 +297,7 @@ build() {
 def changefile_multiline(filename, key, value, endstring="\n"):
     # Read the file
     try:
-        file = open(filename)
+        file = open(filename, encoding="utf-8", errors="surrogateescape")
         data = file.read()
         file.close()
     except IOError:
@@ -308,8 +310,8 @@ def changefile_multiline(filename, key, value, endstring="\n"):
 
 def test_changefile_multiline():
     # Test data
-    testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3
-    testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3
+    testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3 + "æøåÆØÅ"
+    testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3 + "æøåÆØÅ"
     filename = "/tmp/test_changefile.txt"
     # Write the testfile
     file = open(filename, "w")
