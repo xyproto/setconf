@@ -13,7 +13,7 @@ from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.5.1"
+VERSION = "0.5.2"
 
 def firstpart(line, including_assignment=True):
     stripline = line.strip()
@@ -304,9 +304,15 @@ def changefile_multiline(filename, key, value, endstring="\n"):
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
-    file = open(filename, "w")
-    file.write(change_multiline(data, key, value, endstring))
-    file.close()
+    new_contents = change_multiline(data, key, value, endstring)
+    try:
+        file = open(filename, "w", encoding="utf-8")
+        file.write(new_contents)
+    except UnicodeEncodeError:
+        print("UnicodeEncodeError: Can't change value for %s" % (filename))
+        sysexit(2)
+    finally:
+        file.close()
 
 def test_changefile_multiline():
     # Test data

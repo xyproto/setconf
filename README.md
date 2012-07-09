@@ -13,7 +13,11 @@ TODO
   the configuration option is missing
 * Add support for changing values of "#define" and "(setq" as well?
 * Manipulate bytes, not strings or lines
-* Rewrite in Go?
+* Rewrite in Go
+
+Changes from 0.5.1 to 0.5.2 (released)
+------------------------------------
+* Fixed a problem with ascii/utf-8 encoding
 
 Changes from 0.5 to 0.5.1 (released)
 ------------------------------------
