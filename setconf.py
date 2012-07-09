@@ -119,7 +119,7 @@ tea := yes
 def changefile(filename, key, value):
     # Read the file
     try:
-        file = open(filename, encoding="utf-8", errors="surrogateescape")
+        file = open(filename, encoding="utf-8")
         data = file.read()
         lines = data.split(linesep)[:-1]
         file.close()
@@ -127,7 +127,7 @@ def changefile(filename, key, value):
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
-    file = open(filename, "w")
+    file = open(filename, "w", encoding="utf-8")
     file.write(linesep.join(change(lines, key, value)) + linesep)
     file.close()
 
@@ -137,14 +137,14 @@ def test_changefile():
     testcontent_changed = "keys := found" + linesep + "døg = missing" + linesep * 3 + "æøåÆØÅ"
     filename = "/tmp/test_changefile.txt"
     # Write the testfile
-    file = open(filename, "w")
+    file = open(filename, "w", encoding="utf-8")
     file.write(testcontent)
     file.close()
     # Change the file with changefile
     changefile(filename, "keys", "found")
     changefile(filename, "døg", "missing")
     # Read the file
-    file = open(filename, "r")
+    file = open(filename, encoding="utf-8")
     newcontent = file.read().split(linesep)[:-1]
     file.close()
     # Do the tests
@@ -297,7 +297,7 @@ build() {
 def changefile_multiline(filename, key, value, endstring="\n"):
     # Read the file
     try:
-        file = open(filename, encoding="utf-8", errors="surrogateescape")
+        file = open(filename, encoding="utf-8")
         data = file.read()
         file.close()
     except IOError:
@@ -320,14 +320,14 @@ def test_changefile_multiline():
     testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3 + "æøåÆØÅ"
     filename = "/tmp/test_changefile.txt"
     # Write the testfile
-    file = open(filename, "w")
+    file = open(filename, "w", encoding="utf-8")
     file.write(testcontent)
     file.close()
     # Change the file with changefile
     changefile_multiline(filename, "keys", "found")
     changefile_multiline(filename, "dog", "missing")
     # Read the file
-    file = open(filename, "r")
+    file = open(filename, "r", encoding="utf-8")
     newcontent = file.read()
     file.close()
     # Do the tests
