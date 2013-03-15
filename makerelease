@@ -1,0 +1,8 @@
+#!/bin/sh
+name=setconf
+version=$(grep VERSION $name.py | head -1 | cut -d\" -f2)
+mkdir "$name-$version"
+cp $name.1 $name.py COPYING "$name-$version/"
+gzip "$name-$version/$name.1"
+tar Jcf "$name-$version.tar.xz" "$name-$version/"
+rm -r "$name-$version"
