@@ -1,19 +1,32 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
+# setconf
+# Utility for setting options in configuration files.
+#
 # Alexander Rødseth <rodseth@gmail.com>
+#
+# GPL2
+#
 # May 2009
 # Dec 2011
 # Jan 2012
 # Mar 2012
 # Jun 2012
 # Jul 2012
-# GPL
+# Mar 2013
+#
+
+# Does not import optparse or argparse because they
+# are not supported by shedskin yet.
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
-VERSION = "0.5.2"
+
+VERSION = "0.5.3"
+ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
 def firstpart(line, including_assignment=True):
     stripline = line.strip()
@@ -23,10 +36,9 @@ def firstpart(line, including_assignment=True):
     if (stripline[0] == "#") or (stripline[:2] in ["//", "/*"]):
         return None
     # These assignments are supported, in this order
-    assignments = ['==', '=>', '=', ':=', '::', ':']
     assignment = ""
     found = []
-    for ass in assignments:
+    for ass in ASSIGNMENTS:
         if ass in line:
             found.append(ass)
     if len(found) == 1:
@@ -129,6 +141,22 @@ def changefile(filename, key, value):
     # Change and write the file
     file = open(filename, "w", encoding="utf-8")
     file.write(linesep.join(change(lines, key, value)) + linesep)
+    file.close()
+
+def addtofile(filename, line):
+    # Read the file
+    try:
+        file = open(filename, encoding="utf-8")
+        data = file.read()
+        lines = data.split(linesep)[:-1]
+        file.close()
+    except IOError:
+        print("Can't read %s" % (filename))
+        sysexit(2)
+    # Change and write the file
+    file = open(filename, "w", encoding="utf-8")
+    lines.append(line)
+    file.write(linesep.join(lines) + linesep)
     file.close()
 
 def test_changefile():
@@ -308,11 +336,12 @@ def changefile_multiline(filename, key, value, endstring="\n"):
     try:
         file = open(filename, "w", encoding="utf-8")
         file.write(new_contents)
-    except UnicodeEncodeError:
-        print("UnicodeEncodeError: Can't change value for %s" % (filename))
+    except: # UnicodeEncodeError: not supported by shedskin
+        #print("codeEncodeError: Can't change value for %s" % (filename))
+        print("Can't change value for %s" % (filename))
         sysexit(2)
-    finally:
-        file.close()
+    # finally is not supported by shedskin
+    file.close()
 
 def test_changefile_multiline():
     # Test data
@@ -336,6 +365,34 @@ def test_changefile_multiline():
     print("Changefile multiline passes: %s" % (passes))
     return passes
 
+# Note that this test function may cause sysexit to be called if it fails
+# because it calls the main function directly
+def test_addline():
+    # Test data
+    testcontent = "MOO=yes" + linesep
+    testcontent_changed = "MOO=yes" + linesep + "X=123" + linesep + \
+                          "Y=345" + linesep + "Z:=567" + linesep + \
+                          "FJORD => 999" + linesep
+    filename = "/tmp/test_addline.txt"
+    # Write the testfile
+    file = open(filename, "w", encoding="utf-8")
+    file.write(testcontent)
+    file.close()
+    # Change the file by adding keys and values
+    main(["-a", filename, "X", "123"])
+    main(["--add", filename, "Y=345"])
+    main(["-a", filename, "Z:=567"])
+    main(["--add", filename, "FJORD => 999"])
+    # Read the file
+    file = open(filename, "r", encoding="utf-8")
+    newcontent = file.read()
+    file.close()
+    # Do the tests
+    passes = True
+    passes = passes and newcontent == testcontent_changed
+    print("Addline passes: %s" % (passes))
+    return passes
+
 def tests():
     # If one test fails, the rest will not be run
     passes = True
@@ -344,13 +401,13 @@ def tests():
     passes = passes and test_changefile()
     passes = passes and test_change_multiline()
     passes = passes and test_changefile_multiline()
+    passes = passes and test_addline()
     if passes:
         print("All tests pass!")
     else:
         print("Tests fail.")
 
-def main():
-    args = argv[1:]
+def main(args=argv[1:], exitok=True):
     if len(args) == 1:
         if args[0] in ["-t", "--test"]:
             tests()
@@ -366,13 +423,17 @@ def main():
             print("\t-h or --help\t\tthis text")
             print("\t-t or --test\t\tinternal self test")
             print("\t-v or --version\t\tversion number")
+            print("\t-a or --add\t\tadd the option if it doesn't exist")
+            #print("\t-r or --remove\t\tremove the option if it exist")
             print("")
             print("Examples:")
             print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
-            print("\tsetconf Makefile CC gcc")
+            print("\tsetconf Makefile CC clang")
             print("\tsetconf my.conf x=42")
             print("\tsetconf PKGBUILD sha256sums \"('123abc' 'abc123')\" ')'")
             print("\tsetconf app.py NUMS \"[1, 2, 3]\" ']'")
+            print("\tsetconf -a server.conf ABC 123")
+            #print("\tsetconf -r server.conf ABC")
             print("")
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
@@ -386,18 +447,37 @@ def main():
         else:
             sysexit(2)
     elif len(args) == 3:
-        # Single line replace ("x 123")
-        filename = args[0]
-        key = args[1]
-        value = args[2]
-        changefile(filename, key, value)
+        if args[0] in ["-a", "--add"]:
+            filename = args[1]
+            keyvalue = args[2]
+            found = False
+            for ass in ASSIGNMENTS:
+                if ass in keyvalue:
+                    key, value = keyvalue.split(ass, 1)
+                    addtofile(filename, key + ass + value)
+                    found = True
+                    break
+            if not found:
+                sysexit(2)
+        else:
+            # Single line replace ("x 123")
+            filename = args[0]
+            key = args[1]
+            value = args[2]
+            changefile(filename, key, value)
     elif len(args) == 4:
-        # Multiline replace
-        filename = args[0]
-        key = args[1]
-        value = args[2]
-        endstring = args[3]
-        changefile_multiline(filename, key, value, endstring)
+        if args[0] in ["-a", "--add"]:
+            filename = args[1]
+            key = args[2]
+            value = args[3]
+            addtofile(filename, key + "=" + value)
+        else:
+            # Multiline replace
+            filename = args[0]
+            key = args[1]
+            value = args[2]
+            endstring = args[3]
+            changefile_multiline(filename, key, value, endstring)
     else:
         sysexit(1)
 
