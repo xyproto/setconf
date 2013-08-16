@@ -15,17 +15,21 @@
 # Jun 2012
 # Jul 2012
 # Mar 2013
+# Jul 2013
 #
 
 # Does not import optparse or argparse because they
 # are not supported by shedskin yet.
+
+# TODO: Rewrite in Go
+# TODO: Make -a only add if the key doesn't already exist
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
 
-VERSION = "0.5.3"
+VERSION = "0.5.4"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
 def firstpart(line, including_assignment=True):
