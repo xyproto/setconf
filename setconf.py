@@ -16,20 +16,20 @@
 # Jul 2012
 # Mar 2013
 # Jul 2013
+# Nov 2013
 #
 
 # Does not import optparse or argparse because they
 # are not supported by shedskin yet.
 
 # TODO: Rewrite in Go
-# TODO: Make -a only add if the key doesn't already exist
 
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 
 
-VERSION = "0.5.4"
+VERSION = "0.6"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
 def firstpart(line, including_assignment=True):
@@ -132,7 +132,8 @@ tea := yes
     print("Change passes: %s" % (passes))
     return passes
 
-def changefile(filename, key, value):
+def changefile(filename, key, value, dummyrun=False):
+    """if dummyrun==True, don't write but return True if changes would have been made"""
     # Read the file
     try:
         file = open(filename, encoding="utf-8")
@@ -143,8 +144,11 @@ def changefile(filename, key, value):
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
+    changed_contents = linesep.join(change(lines, key, value)) + linesep
+    if dummyrun:
+        return data != changed_contents
     file = open(filename, "w", encoding="utf-8")
-    file.write(linesep.join(change(lines, key, value)) + linesep)
+    file.write(changed_contents)
     file.close()
 
 def addtofile(filename, line):
@@ -374,7 +378,7 @@ def test_changefile_multiline():
 def test_addline():
     # Test data
     testcontent = "MOO=yes" + linesep
-    testcontent_changed = "MOO=yes" + linesep + "X=123" + linesep + \
+    testcontent_changed = "MOO=no" + linesep + "X=123" + linesep + \
                           "Y=345" + linesep + "Z:=567" + linesep + \
                           "FJORD => 999" + linesep
     filename = "/tmp/test_addline.txt"
@@ -387,6 +391,7 @@ def test_addline():
     main(["--add", filename, "Y=345"])
     main(["-a", filename, "Z:=567"])
     main(["--add", filename, "FJORD => 999"])
+    main(["--add", filename, "MOO", "no"])
     # Read the file
     file = open(filename, "r", encoding="utf-8")
     newcontent = file.read()
@@ -452,17 +457,24 @@ def main(args=argv[1:], exitok=True):
             sysexit(2)
     elif len(args) == 3:
         if args[0] in ["-a", "--add"]:
+            # Single line replace/add ("x 123")
             filename = args[1]
             keyvalue = args[2]
-            found = False
+
+            # Change the file if possible, if not, add the key value
+            assignment = None
             for ass in ASSIGNMENTS:
                 if ass in keyvalue:
-                    key, value = keyvalue.split(ass, 1)
-                    addtofile(filename, key + ass + value)
-                    found = True
+                    assignment = ass
                     break
-            if not found:
+            if not assignment:
                 sysexit(2)
+            wrongkey, value = keyvalue.split(assignment, 1)
+            key = firstpart(keyvalue, False)
+            if changefile(filename, key, value, dummyrun=True):
+                changefile(filename, key, value)
+            else:
+                addtofile(filename, keyvalue)
         else:
             # Single line replace ("x 123")
             filename = args[0]
@@ -474,7 +486,13 @@ def main(args=argv[1:], exitok=True):
             filename = args[1]
             key = args[2]
             value = args[3]
-            addtofile(filename, key + "=" + value)
+
+            # Change the file if possible, if not, add the key value
+            if changefile(filename, key, value, dummyrun=True):
+                # TODO: Optimize, only read file once
+                changefile(filename, key, value)
+            else:
+                addtofile(filename, key + "=" + value)
         else:
             # Multiline replace
             filename = args[0]
