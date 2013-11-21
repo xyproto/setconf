@@ -26,13 +26,7 @@ from sys import argv
 from sys import exit as sysexit
 from os import linesep
 from os.path import exists
-
-# Shedskin does not support the tempfile module
-#from tempfile import mkstemp
-
-def mkstemp():
-    return ["", "/tmp/_testfile.tmp"]
-
+from tempfile import mkstemp
 
 VERSION = "0.6.1"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
@@ -414,14 +408,14 @@ def test_addline():
     testcontent_changed2 = "x=2" + linesep
     filename = mkstemp()[1]
     # Write an empty testfile
-    file = open(filename, "w")
+    file = open(filename, "w+")
     file.close()
     # Change the file by adding keys and values
     main(["-a", filename, "x=2"])
     # Read the file
-    file = open(filename, "r", encoding="utf-8")
-    newcontent2 = file.read()
-    file.close()
+    file2 = open(filename, "r", encoding="utf-8")
+    newcontent2 = file2.read()
+    file2.close()
 
     # Do the tests
     passes = True
@@ -447,7 +441,6 @@ def tests():
 def create_if_missing(filename):
     if not exists(filename):
         f = open(filename, "w")
-        f.write("")
         f.close()
 
 def main(args=argv[1:], exitok=True):
