@@ -15,7 +15,12 @@ TODO
 * Manipulate bytes, not strings or lines
 * Rewrite in Go?
 * An option for removing the configuration value instead of using ''
+* Refactor the code that is used for adding options with -a
 * An option for removing both the key and the value
+
+Changes from 0.5.3 to 0.6
+-------------------------
+* Made -a add options only when not already present
 
 Changes from 0.5.2 to 0.5.3
 ---------------------------
