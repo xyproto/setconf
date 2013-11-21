@@ -26,6 +26,7 @@ from sys import argv
 from sys import exit as sysexit
 from os import linesep
 from os.path import exists
+from tempfile import mkstemp
 
 
 VERSION = "0.6.1"
@@ -172,7 +173,7 @@ def test_changefile():
     # Test data
     testcontent = "keys := missing" + linesep + "døg = found" + linesep * 3 + "æøåÆØÅ"
     testcontent_changed = "keys := found" + linesep + "døg = missing" + linesep * 3 + "æøåÆØÅ"
-    filename = "/tmp/test_changefile.txt"
+    filename = mkstemp()[1]
     # Write the testfile
     file = open(filename, "w", encoding="utf-8")
     file.write(testcontent)
@@ -356,7 +357,7 @@ def test_changefile_multiline():
     # Test data
     testcontent = "keys := missing" + linesep + "dog = found" + linesep * 3 + "æøåÆØÅ"
     testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3 + "æøåÆØÅ"
-    filename = "/tmp/test_changefile.txt"
+    filename = mkstemp()[1]
     # Write the testfile
     file = open(filename, "w", encoding="utf-8")
     file.write(testcontent)
@@ -377,13 +378,13 @@ def test_changefile_multiline():
 # Note that this test function may cause sysexit to be called if it fails
 # because it calls the main function directly
 def test_addline():
-    # Test data
+    # --- TEST 1 ---
     testcontent = "MOO=yes" + linesep
     testcontent_changed = "MOO=no" + linesep + "X=123" + linesep + \
                           "Y=345" + linesep + "Z:=567" + linesep + \
                           "FJORD => 999" + linesep + 'vm.swappiness=1' \
                           + linesep
-    filename = "/tmp/test_addline.txt"
+    filename = mkstemp()[1]
     # Write the testfile
     file = open(filename, "w", encoding="utf-8")
     file.write(testcontent)
@@ -400,9 +401,24 @@ def test_addline():
     file = open(filename, "r", encoding="utf-8")
     newcontent = file.read()
     file.close()
+
+    # --- TEST 2 ---
+    testcontent_changed2 = "x=2" + linesep
+    filename = mkstemp()[1]
+    # Write an empty testfile
+    file = open(filename, "w")
+    file.close()
+    # Change the file by adding keys and values
+    main(["-a", filename, "x=2"])
+    # Read the file
+    file = open(filename, "r", encoding="utf-8")
+    newcontent2 = file.read()
+    file.close()
+
     # Do the tests
     passes = True
     passes = passes and (newcontent == testcontent_changed)
+    passes = passes and (newcontent2 == testcontent_changed2)
     print("Addline passes: %s" % (passes))
     return passes
 
