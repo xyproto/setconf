@@ -21,6 +21,7 @@ TODO
 Changes from 0.5.3 to 0.6
 -------------------------
 * Made -a add options only when not already present
+* Known bugs: -a does not work properly, will be fixed in next version
 
 Changes from 0.5.2 to 0.5.3
 ---------------------------
