@@ -18,10 +18,13 @@ TODO
 * Refactor the code that is used for adding options with -a
 * An option for removing both the key and the value
 
+Changes from 0.6 to 0.6.1
+-------------------------
+* Fixed a problem with the -a option
+
 Changes from 0.5.3 to 0.6
 -------------------------
 * Made -a add options only when not already present
-* Known bugs: -a does not work properly, will be fixed in next version
 
 Changes from 0.5.2 to 0.5.3
 ---------------------------

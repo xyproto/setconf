@@ -29,7 +29,7 @@ from sys import exit as sysexit
 from os import linesep
 
 
-VERSION = "0.6"
+VERSION = "0.6.1"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
 def firstpart(line, including_assignment=True):
@@ -380,7 +380,8 @@ def test_addline():
     testcontent = "MOO=yes" + linesep
     testcontent_changed = "MOO=no" + linesep + "X=123" + linesep + \
                           "Y=345" + linesep + "Z:=567" + linesep + \
-                          "FJORD => 999" + linesep
+                          "FJORD => 999" + linesep + 'vm.swappiness=1' \
+                          + linesep
     filename = "/tmp/test_addline.txt"
     # Write the testfile
     file = open(filename, "w", encoding="utf-8")
@@ -392,13 +393,15 @@ def test_addline():
     main(["-a", filename, "Z:=567"])
     main(["--add", filename, "FJORD => 999"])
     main(["--add", filename, "MOO", "no"])
+    main(["-a", filename, "vm.swappiness=1"])
+    main(["-a", filename, "vm.swappiness=1"])
     # Read the file
     file = open(filename, "r", encoding="utf-8")
     newcontent = file.read()
     file.close()
     # Do the tests
     passes = True
-    passes = passes and newcontent == testcontent_changed
+    passes = passes and (newcontent == testcontent_changed)
     print("Addline passes: %s" % (passes))
     return passes
 
