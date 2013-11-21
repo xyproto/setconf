@@ -144,7 +144,10 @@ def changefile(filename, key, value, dummyrun=False):
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
-    changed_contents = linesep.join(change(lines, key, value)) + linesep
+    changed_contents = linesep.join(change(lines, key, value))
+    # Only add a final newline if the original contents had one at the end
+    if data.endswith(linesep):
+        changed_contents += linesep
     if dummyrun:
         return data != changed_contents
     file = open(filename, "w", encoding="utf-8")
@@ -171,8 +174,8 @@ def addtofile(filename, line):
 
 def test_changefile():
     # Test data
-    testcontent = "keys := missing" + linesep + "døg = found" + linesep * 3 + "æøåÆØÅ"
-    testcontent_changed = "keys := found" + linesep + "døg = missing" + linesep * 3 + "æøåÆØÅ"
+    testcontent = "keys := missing" + linesep + "døg = found" + linesep * 3 + "æøåÆØÅ" + linesep
+    testcontent_changed = "keys := found" + linesep + "døg = missing" + linesep * 3 + "æøåÆØÅ" + linesep
     filename = mkstemp()[1]
     # Write the testfile
     file = open(filename, "w", encoding="utf-8")
