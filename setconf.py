@@ -26,7 +26,12 @@ from sys import argv
 from sys import exit as sysexit
 from os import linesep
 from os.path import exists
-from tempfile import mkstemp
+
+# Shedskin does not support the tempfile module
+#from tempfile import mkstemp
+
+def mkstemp():
+    return ["", "/tmp/_testfile.tmp"]
 
 
 VERSION = "0.6.1"
@@ -442,6 +447,7 @@ def tests():
 def create_if_missing(filename):
     if not exists(filename):
         f = open(filename, "w")
+        f.write("")
         f.close()
 
 def main(args=argv[1:], exitok=True):
