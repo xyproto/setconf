@@ -22,11 +22,10 @@
 # Does not import optparse or argparse because they
 # are not supported by shedskin yet.
 
-# TODO: Rewrite in Go
-
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
+from os.path import exists
 
 
 VERSION = "0.6.1"
@@ -152,6 +151,7 @@ def changefile(filename, key, value, dummyrun=False):
     file.close()
 
 def addtofile(filename, line):
+    """Tries to add a line to a file. UTF-8. No questions asked."""
     # Read the file
     try:
         file = open(filename, encoding="utf-8")
@@ -164,7 +164,8 @@ def addtofile(filename, line):
     # Change and write the file
     file = open(filename, "w", encoding="utf-8")
     lines.append(line)
-    file.write(linesep.join(lines) + linesep)
+    added_data = linesep.join(lines) + linesep
+    file.write(added_data)
     file.close()
 
 def test_changefile():
@@ -419,6 +420,11 @@ def tests():
     else:
         print("Tests fail.")
 
+def create_if_missing(filename):
+    if not exists(filename):
+        f = open(filename, "w")
+        f.close()
+
 def main(args=argv[1:], exitok=True):
     if len(args) == 1:
         if args[0] in ["-t", "--test"]:
@@ -436,6 +442,7 @@ def main(args=argv[1:], exitok=True):
             print("\t-t or --test\t\tinternal self test")
             print("\t-v or --version\t\tversion number")
             print("\t-a or --add\t\tadd the option if it doesn't exist")
+            print("\t\t\t\tcreates the file if needed")
             #print("\t-r or --remove\t\tremove the option if it exist")
             print("")
             print("Examples:")
@@ -464,6 +471,8 @@ def main(args=argv[1:], exitok=True):
             filename = args[1]
             keyvalue = args[2]
 
+            create_if_missing(filename)
+
             # Change the file if possible, if not, add the key value
             assignment = None
             for ass in ASSIGNMENTS:
@@ -472,12 +481,17 @@ def main(args=argv[1:], exitok=True):
                     break
             if not assignment:
                 sysexit(2)
-            wrongkey, value = keyvalue.split(assignment, 1)
+            _, value = keyvalue.split(assignment, 1)
             key = firstpart(keyvalue, False)
+
             if changefile(filename, key, value, dummyrun=True):
                 changefile(filename, key, value)
             else:
-                addtofile(filename, keyvalue)
+                f = open(filename)
+                data = f.read()
+                f.close()
+                if keyvalue not in data:
+                    addtofile(filename, keyvalue)
         else:
             # Single line replace ("x 123")
             filename = args[0]
@@ -490,12 +504,18 @@ def main(args=argv[1:], exitok=True):
             key = args[2]
             value = args[3]
 
+            create_if_missing(filename)
+
             # Change the file if possible, if not, add the key value
             if changefile(filename, key, value, dummyrun=True):
-                # TODO: Optimize, only read file once
                 changefile(filename, key, value)
             else:
-                addtofile(filename, key + "=" + value)
+                keyvalue = key + "=" + value
+                f = open(filename)
+                data = f.read()
+                f.close()
+                if keyvalue not in data:
+                    addtofile(filename, keyvalue)
         else:
             # Multiline replace
             filename = args[0]
