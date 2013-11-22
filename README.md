@@ -15,16 +15,14 @@ Requirements
 
 TODO
 ----
-* A way to change the n'th occurence of a configuration option
-* A way to change all occurences of a configuration option
-* A way to insert a configuration option at the end of a file if
-  the configuration option is missing
+* A way to change only the n'th occurence of a configuration option
 * Add support for changing values of "#define" and "(setq" as well?
-* Manipulate bytes, not strings or lines
+* Manipulate bytes, not strings or lines.
 * Rewrite in Go?
-* An option for removing the configuration value instead of using ''
-* Optimize the code that is used for adding options with -a
-* An option for removing both the key and the value
+* An option for removing the configuration value instead of using ''.
+* Optimize the code that is used for adding options with -a.
+* An option for removing both the key and the value.
+* Test and fix the combination of -a and multiline markers.
 
 
 Changes from 0.6.1 to 0.6.2
