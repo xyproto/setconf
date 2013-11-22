@@ -19,6 +19,12 @@
 # Nov 2013
 #
 
+# Python version check
+from sys import version_info, exit
+if version_info[0] < 3:
+    print('\033[31msetconf requires Python 3 or later\033[0m')
+    exit(1)
+
 # Does not import optparse or argparse because they
 # are not supported by shedskin yet.
 
