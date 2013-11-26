@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 # -*- coding: utf-8 -*-
 #
 # setconf
@@ -24,12 +24,21 @@ from sys import exit as sysexit
 from os import linesep
 from os.path import exists
 from tempfile import mkstemp
+from subprocess import check_output
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
 VERSION = "0.6.2"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
+def get_encoding(filename):
+    """Use the output from the file command to guess the encoding.
+    Returns (True, encoding) or (False, None)"""
+    s = check_output(["/usr/bin/file", filename]).strip().decode('utf-8')
+    if s.endswith("text"):
+        return (True, s.split(" ")[1])
+    else:
+        return (False, None)
 
 def firstpart(line, including_assignment=True):
     stripline = line.strip()
