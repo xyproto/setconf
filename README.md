@@ -8,21 +8,21 @@ Patches are welcome.
 
 Requirements
 ------------
-* Only Python
-* Alternatively, it can be compiled to native with <a href="http://nuitka.net/">nuitka</a>. These parameters should work: `--exe --lto --python-version=3.3`
-* One of the tests fails with <a href="http://code.google.com/p/shedskin">shedskin</a> (and shedskin does not support mkstemp), otherwise that would be a possiblity too.
+* Python 2
+* It can be compiled to native with <a href="http://nuitka.net/">nuitka</a>. Try these parameters: `--exe --lto --python-version=2.7`
 
 
 TODO
 ----
 * A way to change only the n'th occurence of a configuration option
 * Add support for changing values of "#define" and "(setq" as well?
-* Manipulate bytes, not strings or lines.
 * Rewrite in Go?
 * An option for removing the configuration value instead of using ''.
 * Optimize the code that is used for adding options with -a.
 * An option for removing both the key and the value.
 * Test and fix the combination of -a and multiline markers.
+* Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
+* Refactor
 
 
 Changes from 0.6.1 to 0.6.2
