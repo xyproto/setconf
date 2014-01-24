@@ -6,9 +6,8 @@ Setconf is a small utility for changing settings in configuration textfiles.
 Patches are welcome.
 
 
-Requirements
-------------
-* Python 2
+Compile time features
+---------------------
 * It can be compiled to native with <a href="http://nuitka.net/">nuitka</a>. Try these parameters: `--exe --lto --python-version=2.7`
 
 
@@ -19,8 +18,10 @@ TODO
 * Rewrite in Go?
 * An option for removing the configuration value instead of using ''.
 * Optimize the code that is used for adding options with -a.
+* A way to add an option with -a after a given string occurs.
 * An option for removing both the key and the value.
 * Test and fix the combination of -a and multiline markers.
+* Fix the behavior when " is the multiline marker and ":" the delimiter. (the yml format)
 * Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
 
