@@ -7,8 +7,9 @@
   <img src="setconflogo.png" style="width: 150px; height: 150px; float: right; margin-top: 2em; margin-right: 4em;" />
 <div style="margin-left: 40px;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"></span></big></big>
 <big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"></span></big></big></div>
-<div style="color: white; margin-left: 80px;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"><br />
+<div style="color: white; margin-left: 4em;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"><br />
     <big style="color: rgb(51, 51, 51);"><big>setconf</big></big></span></big></big><br />
+<br />
 <br />
 </div>
 <div style="margin-left: 40px;">
@@ -19,6 +20,7 @@ is it?</span>
 <div style="margin-left: 200px;"><br />
 setconf is a small
 utility that can be used for changing settings in configuration textfiles.<br />
+<br />
 <br />
 </div>
 <div style="margin-left: 120px; background-color: white; color: black;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">What
@@ -41,6 +43,7 @@ key it finds and change the value.<br />
 setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
 <br />
 <br />
+<br />
 </div>
 <div style="margin-left: 120px; color: white; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; color: black;"><span style="font-weight: bold;">Example</span></span><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;"></span>
 </div>
@@ -53,6 +56,7 @@ doesn't cut it, for some reason.<br />
 Then you can use the following command:<br /><br />
 <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
 setconf Makefile CC gcc</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
+<br />
 <br />
 </div>
 <div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Why?</span>
@@ -71,6 +75,7 @@ thousand problems halfway, in true UNIX-spirit.</li>
 <li>It's only one small executable, not a big package.</li>
 <li>It can add options and files if they are missing, by using <span style="font-family: Courier New,Courier,monospace;">--add</span>.</li>
 </ul>
+<br />
 </div>
 <div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Syntax comparison</span>
 </div>
@@ -95,27 +100,28 @@ vs</br>
 <br />
 Setting a value, adding the key and value if missing and creating the file if missing:<br /><br />
 <div style="margin-left: 42px;">
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-  grep -q 'x=' file 2&gt/dev/null &amp;&amp; sed 's/x=2/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
-</span>
-<br />
-vs</br>
-<br />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-  setconf -a file x=7</br>
-</span>
-</div>
-<br />
-<br />
-Note that the example using sed will not handle variations in whitespace or in choice of operator symbol.<br />
+    <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
+        grep -q 'x=' file 2&gt/dev/null &amp;&amp; sed 's/x=2/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
+    </span>
+    <br />
+    vs</br>
+    <br />
+        <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
+            setconf -a file x=7</br>
+        </span>
+    </div>
+    <br />
+    <br />
+    Note that the example using sed will not handle variations in whitespace or in choice of operator symbol.<br />
 setconf supports
-<span style="font-family: Courier New,Courier,monospace;">==</span>,
-<span style="font-family: Courier New,Courier,monospace;">=&gt;</span>,
-<span style="font-family: Courier New,Courier,monospace;">=</span>,
-<span style="font-family: Courier New,Courier,monospace;">:=</span>,
-<span style="font-family: Courier New,Courier,monospace;">::</span>
-and <span style="font-family: Courier New,Courier,monospace;">:</span>.Also, the old value has to be provided if performing replacements with sed.</br>
-<br />
+    <span style="font-family: Courier New,Courier,monospace;">==</span>,
+    <span style="font-family: Courier New,Courier,monospace;">=&gt;</span>,
+    <span style="font-family: Courier New,Courier,monospace;">=</span>,
+    <span style="font-family: Courier New,Courier,monospace;">:=</span>,
+    <span style="font-family: Courier New,Courier,monospace;">::</span>
+    and <span style="font-family: Courier New,Courier,monospace;">:</span>.Also, the old value has to be provided if performing replacements with sed.</br>
+    <br />
+    <br />
 </div>
 <div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Which arguments are supported?</span>
 </div>
@@ -126,6 +132,7 @@ and <span style="font-family: Courier New,Courier,monospace;">:</span>.Also, the
     It's also possible to add lines with <span style="font-family: Courier New, Courier, monospace;">-a</span> or <span style="font-family: Courier New, Courier, monospace;">--add</span>.<br />
     <br />
     See the man page or <span style="font-family: Courier New, Courier, monospace;">--help</span> output for more information.
+    <br />
     <br />
     <br />
 </div>
@@ -139,17 +146,19 @@ and <span style="font-family: Courier New,Courier,monospace;">:</span>.Also, the
 <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
     git clone git://github.com/xyproto/setconf.git</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
     <br />
+    <br />
 </div>
 
 <div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Installation</span>
 </div>
 <div style="margin-left: 200px;">
     <br />
-    Arch Linux<br/>
+    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Arch Linux</div>
     <p style="margin-left: 42px;">
-    <span style="font-family: Courier New, Courier, monospace;">pacman -S setconf</span> (<a href="http://www.archlinux.org/packages/community/any/setconf/">webpage</a>).<br />
+    <span style="font-family: Courier New, Courier, monospace;">pacman -S setconf</span><br /><br/>
+    See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br />
     </p>
-    Quick manual installation<br />
+    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Manually</div>
     <p style="margin-left: 42px;">
     It's recommended to install setconf with your distros package management system.<br />
     <br />
