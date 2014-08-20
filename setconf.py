@@ -4,7 +4,7 @@
 # setconf
 # Utility for setting options in configuration files.
 #
-# Alexander Rødseth <rodseth@gmail.com>
+# Alexander F Rødseth <rodseth@gmail.com>
 #
 # GPL2
 #
@@ -17,6 +17,7 @@
 # Mar 2013
 # Jul 2013
 # Nov 2013
+# Aug 2014
 #
 
 from sys import argv
