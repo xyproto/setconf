@@ -1,6 +1,8 @@
 setconf
 =========
 
+[![Build Status](https://travis-ci.org/xyproto/setconf.svg?branch=master)](https://travis-ci.org/xyproto/setconf)
+
 Setconf is a small utility for changing settings in configuration textfiles.
 
 Patches are welcome.
@@ -63,3 +65,11 @@ Changes from 0.4 to 0.5
 Changes from 0.3.2 to 0.4 (released)
 ------------------------------------
 * Ignored configuration options that are commented out
+
+
+General information
+-------------------
+
+* License: GPL2
+* Author: Alexander F Rødseth
+
