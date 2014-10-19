@@ -14,7 +14,7 @@ import (
 
 var (
 	assignments     = []string{"==", "=>", ":=", "=", "::", ":"}
-	defineprefixes  = []string{"#define"}
+	defineprefixes  = []string{"#define ", "export "}
 	commentprefixes = []string{"//", "/*", "#", "--", "\" ", "rem ", "*"} // it's unlikely that lines that are not commented out starts with *
 	matchingPairs   = map[string]string{
 		"{": "}",
