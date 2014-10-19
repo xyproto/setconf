@@ -1,1 +1,5 @@
 *.tar.xz
+setconf
+*~
+.nfs*
+*.test
