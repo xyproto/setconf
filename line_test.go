@@ -83,7 +83,7 @@ func TestChangeline(t *testing.T) {
 		[]string{"æøå =>\t123", "256", "æøå =>\t256"},
 	}
 
-	for index, testdata := range changeline_testdata {
+	for _, testdata := range changeline_testdata {
 		orig := testdata[0]
 		newval := testdata[1]
 		changed := testdata[2]
@@ -91,11 +91,11 @@ func TestChangeline(t *testing.T) {
 		if result := changeline(orig, newval); result != changed {
 			t.Errorf("Could not change from:\n\t%s\n\tto\n\t%s\n\twith new value\n\t%s\n\tgot\n\t%s\n", orig, changed, newval, result)
 			break
-		} else {
-			fmt.Printf("%.2d ok: %s\n", index, changed)
+			//} else {
+			//fmt.Printf("%.2d ok: %s\n", index, changed)
 		}
 	}
-	fmt.Println("Changeline ok")
+	fmt.Println("ok: changeline")
 }
 
 func TestUnmatched(t *testing.T) {
@@ -106,5 +106,5 @@ func TestUnmatched(t *testing.T) {
 	if (!missing) || (missingString != curly) {
 		t.Errorf("Could not catch that the missing string was a \"%s\", got: %s.\n", curly, missingString)
 	}
-	fmt.Println("Matching curly brace ok")
+	fmt.Println("ok: matching bracket")
 }

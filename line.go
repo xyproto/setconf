@@ -1,9 +1,6 @@
 package main
 
-import (
-	"log"
-	"strings"
-)
+import "strings"
 
 // Need to be given a line and be able to identify:
 //    assignment operator, if present (and handle := not just =)
@@ -36,7 +33,7 @@ type Line struct {
 	// These are stored internally, to be able to rebuild the line
 	keyWithWhitespace   string
 	assignment          string
-	valueWithWhitespace string
+	valueWithWhitespace string // may include a newline at the end
 
 	// Should the whitespace be trimmed from the key?
 	trimKey bool
@@ -50,9 +47,9 @@ type Line struct {
 }
 
 func New(data string) *Line {
-	if has(data, Newlines) {
-		log.Fatalln("Line must not contain a newline! " + data)
-	}
+	//if has(data, Newlines) {
+	//	log.Fatalln("Line must not contain a newline! " + data)
+	//}
 	l := new(Line)
 	l.data = data
 

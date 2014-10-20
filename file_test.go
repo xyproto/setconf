@@ -35,7 +35,7 @@ func TestNoNewline(t *testing.T) {
 	if err != nil {
 		t.Errorf("Could not read nonewline.txt\n")
 	}
-	lines := file.Lines()
+	lines := file.Strings()
 	lastline := lines[len(lines)-1]
 	// Confirm that there is no newline at the end
 	if strings.TrimSpace(lastline) != lastline {
