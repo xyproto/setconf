@@ -1,0 +1,7 @@
+Hi
+
+This is
+
+a file
+
+with lines and newlines. æøå

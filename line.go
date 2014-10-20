@@ -23,7 +23,7 @@ var (
 	}
 	multilineCommentStart = []string{"/*", "(*"}
 	multilineCommentEnd   = []string{"*/", "*)"}
-	newlines              = []string{"\n", "\r", "\r\n"}
+	Newlines              = []string{"\n", "\r", "\r\n"}
 )
 
 const (
@@ -50,7 +50,7 @@ type Line struct {
 }
 
 func New(data string) *Line {
-	if has(data, newlines) {
+	if has(data, Newlines) {
 		log.Fatalln("Line must not contain a newline! " + data)
 	}
 	l := new(Line)
