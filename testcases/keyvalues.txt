@@ -1,0 +1,9 @@
+x = 2
+
+export SOMETHING =		new
+
+// rest == 1.2.3.4
+
+y = {
+	"3, 2, 1"
+    }

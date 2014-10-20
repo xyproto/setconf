@@ -1,41 +1,98 @@
 package main
 
-import "io/ioutil"
+import (
+	"bytes"
+	"errors"
+	"io/ioutil"
+	"strings"
+)
 
 type File struct {
-	data string
+	// The entire contents
+	data []byte
+	// The filename, if any
+	filename string
 }
 
-func NewFile(data string) *File {
-	return &File{data}
-}
-
+// Open a file, return a *File with the data and filename
 func Open(filename string) (*File, error) {
 	b, err := ioutil.ReadFile(filename)
-	return &File{string(b)}, err
+	return &File{b, filename}, err
 }
 
+// Intialize a new *File manually
+func NewFile(data string) *File {
+	return &File{[]byte(data), ""}
+}
+
+// Create a new blank bytes.Buffer
+func blankBuffer() (buf bytes.Buffer) {
+	return // buf
+}
+
+// Get the lines as a slice of strings
 func (f *File) Lines() (lines []string) {
+	const newlinesAsSeparateLines = false
 	var (
-		lineBuilder string
+		lineBuilder bytes.Buffer
 		lineIndex   int
 	)
 	for _, r := range f.data {
 		if in(Newlines, string(r)) {
-			// Add the newline at the end of the line
-			lineBuilder += string(r)
-			// Store this line
-			lines = append(lines, lineBuilder)
+			if !newlinesAsSeparateLines {
+				// Add the newline at the end of the line
+				lineBuilder.Write([]byte{r})
+			}
+			// Store this line, if it has any contents
+			lines = append(lines, lineBuilder.String())
+			if newlinesAsSeparateLines {
+				// Store the newline
+				lines = append(lines, string(r))
+			}
 			// Prepare for the next line
 			lineIndex++
-			lineBuilder = ""
+			lineBuilder = blankBuffer() //*bytes.NewBuffer([]byte{})
 		} else {
-			lineBuilder += string(r)
+			lineBuilder.Write([]byte{r})
 		}
 	}
 	// Store the final line, if lineBuilder has changed since last append
-	if lineBuilder != "" {
-		lines = append(lines, lineBuilder)
+	if lineBuilder.String() != "" {
+		lines = append(lines, lineBuilder.String())
 	}
 	return // lines
+}
+
+// Only return the lines with contents
+func (f *File) ContentLines() []string {
+	return filterS(nonempty, mapS(strings.TrimSpace, f.Lines()))
+}
+
+// Set the filename if the contents were initialized without reading from a file
+func (f *File) SetFilename(filename string) {
+	f.filename = filename
+}
+
+// Write the contents to f.filename
+func (f *File) Write() error {
+	if f.filename == "" {
+		return errors.New("Set a filename with SetFilename before writing")
+	}
+	return ioutil.WriteFile(f.filename, f.data, 0666)
+}
+
+// Find the line that starts declaring a specific key
+// lineIndex is -1 if not found
+// returns trimmed line contents in line!
+func (f *File) Get(key string) (int, *Line) {
+	for lineIndex, lineContents := range f.Lines() {
+		trimmed := strings.TrimSpace(lineContents)
+		if trimmed != "" {
+			line := New(trimmed)
+			if line.GetKey() == key {
+				return lineIndex, line
+			}
+		}
+	}
+	return -1, New("")
 }

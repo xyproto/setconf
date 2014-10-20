@@ -29,7 +29,7 @@ func TestKeyValue(t *testing.T) {
 	if l.GetValue() != "7" {
 		t.Errorf("Value should be 7, but is %s!", l.GetValue())
 	}
-	fmt.Println("key/value ok")
+	fmt.Println("ok: key/value")
 }
 
 func TestComments(t *testing.T) {
@@ -55,7 +55,7 @@ func TestComments(t *testing.T) {
 	if l.String() != data {
 		t.Errorf("Could not rebuild line! %s != %s", l.String(), data)
 	}
-	fmt.Println("Comments ok")
+	fmt.Println("ok: comments")
 }
 
 func TestComment2(t *testing.T) {
@@ -64,34 +64,7 @@ func TestComment2(t *testing.T) {
 	if !l.IsCommented() {
 		t.Errorf("Comment not detected! %s (%s)", l.String(), data)
 	}
-	fmt.Println("Ignoring comments ok")
-}
-
-// Change the value in a given line
-func changeline(orig, newval string) string {
-	shouldTrimKey := false
-	shouldTrimValue := false
-	minimumOneSpaceAfterKey := true    // only if trim is enabled
-	minimumOneSpaceBeforeValue := true // only if trim is enabled
-	ignoreLinesWithComments := true
-	uncommentLines := false
-
-	l := New(orig)
-	//fmt.Println("COMMENTED?", l.IsCommented())
-	if ignoreLinesWithComments && l.IsCommented() {
-		return l.String()
-	}
-	l.SetValue(newval)
-	if shouldTrimKey {
-		l.TrimKey(minimumOneSpaceAfterKey)
-	}
-	if shouldTrimValue {
-		l.TrimValue(minimumOneSpaceBeforeValue)
-	}
-	if uncommentLines {
-		l.Uncomment()
-	}
-	return l.String()
+	fmt.Println("ok: ignore comments")
 }
 
 func TestChangeline(t *testing.T) {

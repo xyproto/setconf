@@ -6,6 +6,8 @@ import (
 	"unicode"
 )
 
+// --- slices of strings ---
+
 // Check if a given string contains one of the given strings.
 // Returns true if it was found, together with the string that was found.
 func contains(data string, xs []string) (bool, string) {
@@ -23,12 +25,24 @@ func has(data string, xs []string) bool {
 	return ok
 }
 
+// For a given list of strings, check if the given string is one of them
+func in(xs []string, x string) bool {
+	for _, e := range xs {
+		if e == x {
+			return true
+		}
+	}
+	return false
+}
+
 // Check if a given string contains one of the given strings.
 // Returns the string that was found, or "".
 func get(data string, xs []string) string {
 	_, s := contains(data, xs)
 	return s
 }
+
+// --- prefix ---
 
 // Check if the string (disregarding whitespace) starts with one of the given strings
 func prefix(data string, xs []string) (bool, string) {
@@ -63,6 +77,8 @@ func removePrefix(s, p string) string {
 	log.Fatalln("Prefix not found in string!")
 	return s
 }
+
+// --- suffix ---
 
 // Check if the string (disregarding whitespace) starts with one of the given strings
 func suffix(data string, xs []string) (bool, string) {
@@ -99,15 +115,7 @@ func removeSuffix(s, p string) string {
 	return s[:lastpos] + s[lastpos+len(p):]
 }
 
-// For a given list of strings, check if the given string is one of them
-func in(xs []string, x string) bool {
-	for _, e := range xs {
-		if e == x {
-			return true
-		}
-	}
-	return false
-}
+// --- runes and whitespace ---
 
 // Return the last rune of a string
 func lastRune(s string) (last rune) {
@@ -153,4 +161,30 @@ func firstWhitespace(s string) string {
 		}
 	}
 	return oneWhitespace
+}
+
+// --- map and filter ---
+
+// mapS applies the given function for each element in the string slice
+func mapS(fn func(string) string, sl []string) []string {
+	newlist := make([]string, len(sl))
+	for i, element := range sl {
+		newlist[i] = fn(element)
+	}
+	return newlist
+}
+
+// filterS only includes the strings for which the given function returns true
+func filterS(fn func(string) bool, sl []string) (newlist []string) {
+	for _, element := range sl {
+		if fn(element) {
+			newlist = append(newlist, element)
+		}
+	}
+	return // newlist
+}
+
+// Check that a string is not empty. Used for filtering.
+func nonempty(s string) bool {
+	return s != ""
 }

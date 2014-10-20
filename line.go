@@ -23,7 +23,7 @@ var (
 	}
 	multilineCommentStart = []string{"/*", "(*"}
 	multilineCommentEnd   = []string{"*/", "*)"}
-	Newlines              = []string{"\n", "\r", "\r\n"}
+	Newlines              = []string{"\r\n", "\n", "\r"}
 )
 
 const (
@@ -258,4 +258,32 @@ func (line *Line) String() string {
 		value = oneWhitespace + strings.TrimSpace(value)
 	}
 	return key + line.assignment + value
+}
+
+// Helper function. Change the value in a given line.
+func changeline(orig, newval string) string {
+	const (
+		shouldTrimKey              = false
+		shouldTrimValue            = false
+		minimumOneSpaceAfterKey    = true // only if trim is enabled
+		minimumOneSpaceBeforeValue = true // only if trim is enabled
+		ignoreLinesWithComments    = true
+		uncommentLines             = false
+	)
+
+	l := New(orig)
+	if ignoreLinesWithComments && l.IsCommented() {
+		return l.String()
+	}
+	l.SetValue(newval)
+	if shouldTrimKey {
+		l.TrimKey(minimumOneSpaceAfterKey)
+	}
+	if shouldTrimValue {
+		l.TrimValue(minimumOneSpaceBeforeValue)
+	}
+	if uncommentLines {
+		l.Uncomment()
+	}
+	return l.String()
 }
