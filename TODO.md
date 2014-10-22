@@ -7,7 +7,7 @@ TODO for porting
 [X] test_changeline
 [X] has_key
 [_] commandline options
-[_] create_if_missing
+[X] create_if_missing
 [_] change
 [_] test_change
 [_] changefile
