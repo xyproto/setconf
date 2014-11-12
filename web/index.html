@@ -102,7 +102,7 @@ vs</br>
 Setting a value, adding the key and value if missing and creating the file if missing:<br /><br />
 <div style="margin-left: 42px;">
     <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-        grep -q 'x=' file 2&gt/dev/null &amp;&amp; sed 's/x=2/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
+        grep -q 'x=' file 2&gt/dev/null &amp;&amp; sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
     </span>
     <br />
     vs</br>
@@ -120,7 +120,7 @@ setconf supports
     <span style="font-family: Courier New,Courier,monospace;">=</span>,
     <span style="font-family: Courier New,Courier,monospace;">:=</span>,
     <span style="font-family: Courier New,Courier,monospace;">::</span>
-    and <span style="font-family: Courier New,Courier,monospace;">:</span>. Also note that the old value has to be provided if performing replacements with sed.</br>
+    and <span style="font-family: Courier New,Courier,monospace;">:</span>. Also note that the old value may have to be provided if performing replacements with sed.</br>
     <br />
     <br />
 </div>
