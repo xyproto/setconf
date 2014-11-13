@@ -1,0 +1,15 @@
+# ---===[ robots.txt ]===---
+
+# PartyBob
+User-agent: PartyBob
+Crawl-delay: 42
+Disallow: /
+
+# Everyone else
+User-agent: *
+Crawl-delay: 5
+Disallow: /tmp/
+Disallow: *~
+Allow: /
+
+# a snowman ☃
