@@ -19,6 +19,7 @@
 # Nov 2013
 # Aug 2014
 # Oct 2014
+# Dec 2014
 #
 
 from sys import argv
@@ -30,7 +31,7 @@ from subprocess import check_output
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
-VERSION = "0.6.3"
+VERSION = "0.6.4"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
 def get_encoding(filename):
@@ -171,7 +172,11 @@ def changefile(filename, key, value, dummyrun=False):
         changed_contents += linesep
     if dummyrun:
         return data != changed_contents
-    file = open(filename, "w")
+    try:
+        file = open(filename, "w")
+    except IOError:
+        print("No write permission: %s" % (filename))
+        sysexit(2)
     file.write(changed_contents)
     file.close()
 
@@ -188,7 +193,11 @@ def addtofile(filename, line):
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
-    file = open(filename, "w")
+    try:
+        file = open(filename, "w")
+    except IOError:
+        print("No write permission: %s" % (filename))
+        sysexit(2)
     lines.append(line)
     added_data = linesep.join(lines) + linesep
     file.write(added_data)
@@ -487,7 +496,11 @@ def tests():
 
 def create_if_missing(filename):
     if not exists(filename):
-        f = open(filename, "w")
+        try:
+            f = open(filename, "w")
+        except IOError:
+            print("No write permission: %s" % (filename))
+            sysexit(2)
         f.close()
 
 
