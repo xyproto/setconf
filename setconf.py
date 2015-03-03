@@ -183,6 +183,11 @@ def changefile(filename, key, value, dummyrun=False):
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
+    if not data.endswith(linesep):
+        file = open(filename)
+        data = file.read()
+        lines = data.split(linesep)
+        file.close()
     # Change and write the file
     changed_contents = linesep.join(change(lines, key, value))
     # Only add a final newline if the original contents had one at the end
