@@ -29,6 +29,10 @@ TODO
 * Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
 
+Changes from 0.6.4 to 0.6.5
+---------------------------
+* Can now use += or -= for increasing or decreasing integer values
+
 Changes from 0.6.3 to 0.6.4
 ---------------------------
 * Better error messages when write permissions are denied
