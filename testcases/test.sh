@@ -1,26 +1,41 @@
 #!/bin/sh
 
-# TODO: Create one function for preparing and one for diffing+removing
-#       temporary test files.
+function start() {
+  filename=$1
+  echo -n "Testing $filename..."
+  rm -f "$filename"
+  cp "$filename.orig" "$filename"
+}
 
-echo -n 'Testing PKGBUILD...'
-rm -f PKGBUILD
-cp PKGBUILD.orig PKGBUILD
+function complete() {
+  filename=$1
+  diff "$filename" "$filename.correct" \
+    && (echo 'ok'; rm -f "$filename") \
+    || echo 'FAIL'
+}
+
+start PKGBUILD
 ../setconf.py PKGBUILD pkgname=asdfasdf
 ../setconf.py PKGBUILD pkgrel+=1
-diff PKGBUILD PKGBUILD.correct && (echo 'ok'; rm -f PKGBUILD) || echo 'FAIL'
+complete PKGBUILD
 
-echo -n 'Testing testcase2...'
-rm -f testcase2
-cp testcase2.orig testcase2
+start testcase2
 ../setconf.py testcase2 x+=2
 ../setconf.py testcase2 x-=3
 ../setconf.py testcase2 z+=1000
-diff testcase2 testcase2.correct && (echo 'ok'; rm -f testcase2) || echo 'FAIL'
+complete testcase2
 
-echo -n 'Testing nonewline...'
-rm -f nonewline
-cp nonewline.orig nonewline
+start nonewline
 ../setconf.py nonewline x=3
-diff nonewline nonewline.correct && (echo 'ok'; rm -f nonewline) || echo 'FAIL'
+complete nonewline
+
+start nonewline2
+../setconf.py -a nonewline2 y=7
+complete nonewline2
+
+echo -n 'Testing nonexisting...'
+../setconf.py nonexisting x+=1 >/dev/null 2> error.log
+grep Errno error.log \
+  && (echo FAIL; cat error.log) \
+  || (echo ok; rm -f error.log)
 
