@@ -20,6 +20,7 @@
 # Aug 2014
 # Oct 2014
 # Dec 2014
+# Mar 2015
 #
 
 from sys import argv
@@ -31,8 +32,9 @@ from subprocess import check_output
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
-VERSION = "0.6.4"
-ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
+VERSION = "0.6.5"
+ASSIGNMENTS = ['==', '=>', '+=', '-=', '=', ':=', '::', ':']
+
 
 def get_encoding(filename):
     """Use the output from the file command to guess the encoding.
@@ -43,17 +45,24 @@ def get_encoding(filename):
     else:
         return (False, None)
 
-def firstpart(line, including_assignment=True):
+
+def parts(line, including_assignment=True):
+    """Return the key and value parts of a line, if there is an assignment there.
+    May include the assignment as part of the key."""
     stripline = line.strip()
     if not stripline:
-        return None
+        return None, None
     # Skip lines that start with #, // or /*
     if (stripline[0] == "#") or (stripline[:2] in ["//", "/*"]):
-        return None
+        return None, None
     # These assignments are supported, in this order
     assignment = ""
     found = []
     for ass in ASSIGNMENTS:
+        # Skip the += and -= operators when finding keys and values
+        if ass in ['+=', '-=']:
+            continue
+        # Collect the rest
         if ass in line:
             found.append(ass)
     if len(found) == 1:
@@ -71,12 +80,21 @@ def firstpart(line, including_assignment=True):
         assignment = firstassignment
     # Return the "key" part of the line
     if assignment:
+        fields = line.split(assignment, 1)
         if including_assignment:
-            return line.split(assignment, 1)[0] + assignment
+            return fields[0] + assignment, fields[1]
         else:
-            return line.split(assignment, 1)[0]
+            return fields[0], fields[1]
     # No assignments were found
-    return None
+    return None, None
+
+
+def firstpart(line, including_assignment=True):
+    return parts(line, including_assignment)[0]
+
+
+def secondpart(line, including_assignment=True):
+    return parts(line, including_assignment)[1]
 
 
 def changeline(line, newvalue):
@@ -137,13 +155,13 @@ def test_change():
     testcontent = """LIGHTS =    ON
 bananas= not present
 tea := yes
-    crazyclown    :ok
+    randombob    :ok
 
 """
     testcontent_changed = """LIGHTS = off
 bananas= not present
 tea := yes
-    crazyclown    :ok
+    randombob    :ok
 
 """
     passes = True
@@ -516,6 +534,31 @@ def has_key(data, key):
             return True
     return False
 
+def get_value(data, key):
+    """Return the first value for a given key."""
+    lines = data.split(linesep)[:-1]
+    for line in lines:
+        if not line.strip():
+            # Skip blank lines
+            continue
+        first, second = parts(line, False)
+        if key == first:
+            return second
+    return ""
+
+def inc(startvalue, s):
+    """Increase the number in the string with the given string, or return the same string."""
+    try:
+        return str(int(startvalue)+int(s))
+    except ValueError:
+        return s
+
+def dec(startvalue, s):
+    """Decrease the number in the string with the given string, or return the same string."""
+    try:
+        return str(int(startvalue)-int(s))
+    except ValueError:
+        return s
 
 def main(args=argv[1:], exitok=True):
     if len(args) == 1:
@@ -549,10 +592,24 @@ def main(args=argv[1:], exitok=True):
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
     elif len(args) == 2:
-        # Single line replace ("x=123")
+        # Single line replace: "x=123" or "x+=2"
         filename = args[0]
         keyvalue = args[1]
-        if "=" in keyvalue:
+        if "+=" in keyvalue:
+            key, value = keyvalue.split("+=", 1)
+            f = open(filename)
+            data = f.read()
+            f.close()
+            datavalue = get_value(data, key)
+            changefile(filename, key, inc(datavalue, value))
+        elif "-=" in keyvalue:
+            key, value = keyvalue.split("-=", 1)
+            f = open(filename)
+            data = f.read()
+            f.close()
+            datavalue = get_value(data, key)
+            changefile(filename, key, dec(datavalue, value))
+        elif "=" in keyvalue:
             key, value = keyvalue.split("=", 1)
             changefile(filename, key, value)
         else:
@@ -567,6 +624,7 @@ def main(args=argv[1:], exitok=True):
 
             # Change the file if possible, if not, add the key value
             assignment = None
+            special = None
             for ass in ASSIGNMENTS:
                 if ass in keyvalue:
                     assignment = ass
