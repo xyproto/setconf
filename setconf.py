@@ -183,15 +183,16 @@ def changefile(filename, key, value, dummyrun=False):
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
-    if not data.endswith(linesep):
-        file = open(filename)
-        data = file.read()
-        lines = data.split(linesep)
-        file.close()
+    final_nl = True
+    if linesep not in data:
+        lines = [data]
+        final_nl = False
+    elif not data.endswith(linesep):
+        final_nl = False
     # Change and write the file
     changed_contents = linesep.join(change(lines, key, value))
     # Only add a final newline if the original contents had one at the end
-    if data.endswith(linesep):
+    if final_nl:
         changed_contents += linesep
     if dummyrun:
         return data != changed_contents
@@ -202,7 +203,6 @@ def changefile(filename, key, value, dummyrun=False):
         sysexit(2)
     file.write(changed_contents)
     file.close()
-
 
 def addtofile(filename, line):
     """Tries to add a line to a file. UTF-8. No questions asked."""
@@ -215,6 +215,10 @@ def addtofile(filename, line):
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
+    if data.strip() == "":
+        lines = []
+    elif linesep not in data:
+        lines = [data]
     # Change and write the file
     try:
         file = open(filename, "w")
@@ -602,14 +606,22 @@ def main(args=argv[1:], exitok=True):
         keyvalue = args[1]
         if "+=" in keyvalue:
             key, value = keyvalue.split("+=", 1)
-            f = open(filename)
+            try:
+                f = open(filename)
+            except IOError:
+                print("Can't read %s" % (filename))
+                sysexit(2)
             data = f.read()
             f.close()
             datavalue = get_value(data, key)
             changefile(filename, key, inc(datavalue, value))
         elif "-=" in keyvalue:
             key, value = keyvalue.split("-=", 1)
-            f = open(filename)
+            try:
+                f = open(filename)
+            except IOError:
+                print("Can't read %s" % (filename))
+                sysexit(2)
             data = f.read()
             f.close()
             datavalue = get_value(data, key)
