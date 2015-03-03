@@ -1,1 +1,6 @@
 *.tar.xz
+setconf.build
+*~
+*.pyc
+*.pyo
+*.bak
