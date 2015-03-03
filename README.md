@@ -15,7 +15,6 @@ Compile time features
 
 TODO
 ----
-* Fix changes for configuration files that does not end with a newline when adding values.
 * -u option for uncommenting a key while setting the value (removing "# "). Should uncomment by default?
 * -c option for commenting out a key (adding "# ") or changing a key while keeping it as commented out.
 * A way to change only the n'th occurence of a configuration option
@@ -29,6 +28,10 @@ TODO
 * Fix the behavior when " is the multiline marker and ":" the delimiter. (the yml format)
 * Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
+
+Changes from 0.6.5 to 0.6.6
+---------------------------
+* Fixed a problem with files without newline endings
 
 Changes from 0.6.4 to 0.6.5
 ---------------------------

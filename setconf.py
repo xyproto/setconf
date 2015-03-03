@@ -32,7 +32,7 @@ from subprocess import check_output
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
-VERSION = "0.6.5"
+VERSION = "0.6.6"
 ASSIGNMENTS = ['==', '=>', '+=', '-=', '=', ':=', '::', ':']
 
 
