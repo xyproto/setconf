@@ -29,6 +29,7 @@ from os import linesep
 from os.path import exists
 from tempfile import mkstemp
 from subprocess import check_output
+from decimal import Decimal
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
@@ -555,19 +556,26 @@ def get_value(data, key):
             return second
     return ""
 
+def strip_trailing_zeros(s):
+    return s.rstrip('0').rstrip('.') if '.' in s else s
+
 def inc(startvalue, s):
     """Increase the number in the string with the given string, or return the same string."""
     try:
-        return str(int(startvalue)+int(s))
-    except ValueError:
+        result = str(Decimal(startvalue)+Decimal(s))
+    except ArithmeticError:
         return s
+
+    return strip_trailing_zeros(result)
 
 def dec(startvalue, s):
     """Decrease the number in the string with the given string, or return the same string."""
     try:
-        return str(int(startvalue)-int(s))
-    except ValueError:
+        result = str(Decimal(startvalue)-Decimal(s))
+    except ArithmeticError:
         return s
+
+    return strip_trailing_zeros(result)
 
 def main(args=argv[1:], exitok=True):
     if len(args) == 1:
