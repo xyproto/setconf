@@ -23,6 +23,11 @@ start testcase2
 ../setconf.py testcase2 x+=2
 ../setconf.py testcase2 x-=3
 ../setconf.py testcase2 z+=1000
+../setconf.py testcase2 d1-=.1
+../setconf.py testcase2 d1+=0.3
+../setconf.py testcase2 d2+=.02
+../setconf.py testcase2 d2-=0.01
+../setconf.py testcase2 s+=pie
 complete testcase2
 
 start nonewline
