@@ -4,7 +4,7 @@
 # setconf
 # Utility for setting options in configuration files.
 #
-# Alexander F Rødseth <rodseth@gmail.com>
+# Alexander F Rødseth <xyproto@archlinux.org>
 #
 # GPL2
 #
@@ -21,6 +21,7 @@
 # Oct 2014
 # Dec 2014
 # Mar 2015
+# Jun 2015
 #
 
 from sys import argv
@@ -33,7 +34,7 @@ from decimal import Decimal
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
-VERSION = "0.6.6"
+VERSION = "0.6.7"
 ASSIGNMENTS = ['==', '=>', '+=', '-=', '=', ':=', '::', ':']
 
 
@@ -584,7 +585,7 @@ def main(args=argv[1:], exitok=True):
         elif args[0] in ["-h", "--help"]:
             print("setconf " + VERSION)
             print("")
-            print("Changes a key in a textfile to a given value")
+            print("Changes a key in a text file to a given value")
             print("")
             print("Syntax:")
             print("\tsetconf filename key value [end string for multiline value]")

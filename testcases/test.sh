@@ -28,6 +28,7 @@ start testcase2
 ../setconf.py testcase2 d2+=.02
 ../setconf.py testcase2 d2-=0.01
 ../setconf.py testcase2 s+=pie
+../setconf.py testcase2 y-=0.31
 complete testcase2
 
 start nonewline
