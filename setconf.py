@@ -35,7 +35,7 @@ from decimal import Decimal
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
 VERSION = "0.6.7"
-ASSIGNMENTS = ['==', '=>', '+=', '-=', '=', ':=', '::', ':']
+ASSIGNMENTS = ['==', '=>', '+=', '-=', '?=', '=', ':=', '::', ':']
 
 
 def get_encoding(filename):
