@@ -1,0 +1,4 @@
+include COPYING
+include README.md
+include setconf.1
+include setconf.py
