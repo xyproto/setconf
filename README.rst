@@ -1,7 +1,8 @@
 setconf
 =========
 
-[![Build Status](https://travis-ci.org/xyproto/setconf.svg?branch=master)](https://travis-ci.org/xyproto/setconf)
+.. image:: https://travis-ci.org/xyproto/setconf.svg?branch=master
+  :target: https://travis-ci.org/xyproto/setconf
 
 Setconf is a small utility for changing settings in configuration textfiles.
 
@@ -10,7 +11,8 @@ Patches are welcome.
 
 Compile time features
 ---------------------
-* It can be compiled to native with <a href="http://nuitka.net/">nuitka</a>. Try these parameters: `--exe --lto --python-version=2.7`
+
+* It can be compiled to native with `nuitka <http://nuitka.net>`_. Try these parameters: ``--exe --lto --python-version=2.7``
 
 
 TODO
@@ -94,4 +96,3 @@ General information
 
 * License: GPL2
 * Author: Alexander F Rødseth
-
