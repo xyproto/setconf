@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 # setconf
@@ -22,6 +22,7 @@
 # Dec 2014
 # Mar 2015
 # Jun 2015
+# Mar 2016
 #
 
 from sys import argv
@@ -34,6 +35,8 @@ from decimal import Decimal
 from base64 import b64decode
 import chardet
 
+VERSION = "0.7"
+
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
 def bs(x):
@@ -42,9 +45,7 @@ def bs(x):
         return x.encode("utf-8")
     return x
 
-linesep = bs(linesep_str)
-
-VERSION = "0.6.8"
+NL = bs(linesep_str)
 ASSIGNMENTS = [bs('=='), bs('=>'), bs('+='), bs('-='), bs('?='), bs('='), bs(':='), bs('::'), bs(':')]
 
 
@@ -178,10 +179,10 @@ tea := yes
 
 """)
     passes = True
-    splitted = testcontent.split(linesep)
+    splitted = testcontent.split(NL)
     elements = change(splitted, "LIGHTS", "off")
     a = bytes.join(b"", elements)
-    b = bytes.join(b"", testcontent_changed.split(linesep))
+    b = bytes.join(b"", testcontent_changed.split(NL))
     passes = passes and a == b
     print("Change passes: %s" % (passes))
     return passes
@@ -196,22 +197,22 @@ def changefile(filename, key, value, dummyrun=False):
     try:
         file = open(filename, 'rb')
         data = file.read()
-        lines = data.split(linesep)[:-1]
+        lines = data.split(NL)[:-1]
         file.close()
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
     final_nl = True
-    if linesep not in data:
+    if NL not in data:
         lines = [data]
         final_nl = False
-    elif not data.endswith(linesep):
+    elif not data.endswith(NL):
         final_nl = False
     # Change and write the file
-    changed_contents = linesep.join(change(lines, key, value))
+    changed_contents = NL.join(change(lines, key, value))
     # Only add a final newline if the original contents had one at the end
     if final_nl:
-        changed_contents += linesep
+        changed_contents += NL
     if dummyrun:
         return data != changed_contents
     try:
@@ -231,19 +232,19 @@ def addtofile(filename, line):
     try:
         with open(filename, 'rb') as file:
             data = file.read()
-            lines = data.split(linesep)[:-1]
+            lines = data.split(NL)[:-1]
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
     if data.strip() == bs(""):
         lines = []
-    elif linesep not in data:
+    elif NL not in data:
         lines = [data]
     # Change and write the file
     try:
         with open(filename, 'wb') as file:
             lines.append(line)
-            added_data = linesep.join(lines) + linesep
+            added_data = NL.join(lines) + NL
             file.write(added_data)
     except IOError:
         print("No write permission: %s" % (filename))
@@ -251,9 +252,9 @@ def addtofile(filename, line):
 
 def test_changefile():
     # Test data
-    testcontent = bs("keys := missing") + linesep + bs("døg = found") + linesep * 3 + bs("æøåÆØÅ") + linesep
-    testcontent_changed = bs("keys := found") + linesep + \
-        bs("døg = missing") + linesep * 3 + bs("æøåÆØÅ") + linesep
+    testcontent = bs("keys := missing") + NL + bs("døg = found") + NL * 3 + bs("æøåÆØÅ") + NL
+    testcontent_changed = bs("keys := found") + NL + \
+        bs("døg = missing") + NL * 3 + bs("æøåÆØÅ") + NL
     filename = mkstemp()[1]
     # Write the testfile
     with open(filename, 'wb') as file:
@@ -263,15 +264,15 @@ def test_changefile():
     changefile(filename, "døg", "missing")
     # Read the file
     with open(filename, 'rb') as file:
-        newcontent = file.read().split(linesep)[:-1]
+        newcontent = file.read().split(NL)[:-1]
     # Do the tests
     passes = True
-    passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
+    passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
     print("Changefile passes: %s" % (passes))
     return passes
 
 
-def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfrom=0):
+def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0):
 
     data = bs(data)
     key = bs(key)
@@ -280,7 +281,7 @@ def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfr
 
     if key not in data:
         return data
-    if (endstring != linesep) and (endstring not in data):
+    if (endstring != NL) and (endstring not in data):
         if verbose:
             print("Multiline end marker not found: " + endstring)
         return data
@@ -292,7 +293,7 @@ def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfr
     before = data[:startpos]
     between = data[startpos:endpos + 1]
 
-    linestartpos = data[:startpos].rfind(linesep) + 1
+    linestartpos = data[:startpos].rfind(NL) + 1
     line = data[linestartpos:endpos + 1]
     # If the first part of the line is not a key (could be because it's commented out)...
     if not firstpart(line):
@@ -301,8 +302,8 @@ def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfr
 
     after = data[endpos + len(endstring):]
     newbetween = changeline(between, value)
-    if between.endswith(linesep):
-        newbetween += linesep
+    if between.endswith(NL):
+        newbetween += NL
     result = before + newbetween + after
     return result
 
@@ -310,8 +311,8 @@ def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfr
 def test_change_multiline():
     passes = True
     # test 1
-    testcontent = bs("keys := missing") + linesep + bs("dog = found") + linesep * 3
-    testcontent_changed = bs("keys := found") + linesep + bs("dog = found") + linesep * 3
+    testcontent = bs("keys := missing") + NL + bs("dog = found") + NL * 3
+    testcontent_changed = bs("keys := found") + NL + bs("dog = found") + NL * 3
     a = change_multiline(testcontent, "keys", "found")
     b = testcontent_changed
     extracheck = testcontent.replace(bs("missing"), bs("found")) == testcontent_changed
@@ -460,8 +461,8 @@ def changefile_multiline(filename, key, value, endstring=bs("\n")):
 
 def test_changefile_multiline():
     # Test data
-    testcontent = bs("keys := missing") + linesep + bs("dog = found") + linesep * 3 + bs("æøåÆØÅ")
-    testcontent_changed = bs("keys := found") + linesep + bs("dog = missing") + linesep * 3 + bs("æøåÆØÅ")
+    testcontent = bs("keys := missing") + NL + bs("dog = found") + NL * 3 + bs("æøåÆØÅ")
+    testcontent_changed = bs("keys := found") + NL + bs("dog = missing") + NL * 3 + bs("æøåÆØÅ")
     filename = mkstemp()[1]
     # Write the testfile
     file = open(filename, 'wb')
@@ -486,11 +487,11 @@ def test_changefile_multiline():
 
 def test_addline():
     # --- TEST 1 ---
-    testcontent = bs("# cache-ttl=65000") + linesep + bs("MOO=yes") + linesep
-    testcontent_changed = bs("# cache-ttl=65000") + linesep + bs("MOO=no") + linesep + \
-            bs("X=123") + linesep + bs("Y=345") + linesep + bs("Z:=567") + linesep + \
-                          bs("FJORD => 999") + linesep + bs('vm.swappiness=1') + \
-                          linesep + bs("cache-ttl=6") + linesep
+    testcontent = bs("# cache-ttl=65000") + NL + bs("MOO=yes") + NL
+    testcontent_changed = bs("# cache-ttl=65000") + NL + bs("MOO=no") + NL + \
+            bs("X=123") + NL + bs("Y=345") + NL + bs("Z:=567") + NL + \
+                          bs("FJORD => 999") + NL + bs('vm.swappiness=1') + \
+                          NL + bs("cache-ttl=6") + NL
     filename = mkstemp()[1]
     # Write the testfile
     with open(filename, 'wb') as file:
@@ -509,7 +510,7 @@ def test_addline():
         newcontent = file.read()
 
     # --- TEST 2 ---
-    testcontent_changed2 = bs("x=2") + linesep
+    testcontent_changed2 = bs("x=2") + NL
     filename = mkstemp()[1]
     # Write an empty testfile
     open(filename, 'wb+').close()
@@ -541,10 +542,10 @@ def test_latin1():
     changefile(filename, "x", "42")
     # Read the file
     with open(filename, 'rb') as file:
-        newcontent = file.read().split(linesep)[:-1]
+        newcontent = file.read().split(NL)[:-1]
     # Do the tests
     passes = True
-    passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
+    passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
     print("ISO-8859-1 passes: %s" % (passes))
     return passes
 
@@ -577,7 +578,7 @@ def create_if_missing(filename):
 
 def has_key(data, key):
     """Check if the given key exists in the given data."""
-    lines = data.split(linesep)[:-1]
+    lines = data.split(NL)[:-1]
     for line in lines:
         if not line.strip():
             # Skip blank lines
@@ -589,32 +590,41 @@ def has_key(data, key):
 
 def get_value(data, key):
     """Return the first value for a given key."""
-    lines = data.split(linesep)[:-1]
+    lines = data.split(NL)[:-1]
     for line in lines:
         if not line.strip():
             # Skip blank lines
             continue
         first, second = parts(line, False)
+        if first:
+            first = first.strip()
+        if second:
+            second = second.strip()
         if key == first:
             return second
-    return ""
+    return bs("")
 
 def strip_trailing_zeros(s):
-    return s.rstrip('0').rstrip('.') if '.' in s else s
+    return s.rstrip(bs('0')).rstrip(bs('.')) if bs('.') in s else s
+
+def byte2decimal(b):
+    return Decimal(b.decode("utf-8", "ignore"))
 
 def inc(startvalue, s):
-    """Increase the number in the string with the given string, or return the same string."""
+    """Increase the number in the byte string with the given byte string,
+    or return the same string."""
     try:
-        result = str(Decimal(startvalue)+Decimal(s))
+        result = bs(str(byte2decimal(startvalue) + byte2decimal(s)))
     except ArithmeticError:
         return s
 
     return strip_trailing_zeros(result)
 
 def dec(startvalue, s):
-    """Decrease the number in the string with the given string, or return the same string."""
+    """Decrease the number in the string with the given string,
+    or return the same string."""
     try:
-        result = str(Decimal(startvalue)-Decimal(s))
+        result = bs(str(byte2decimal(startvalue) - byte2decimal(s)))
     except ArithmeticError:
         return s
 
@@ -677,7 +687,7 @@ def main(args=argv[1:], exitok=True):
             f.close()
             datavalue = get_value(data, key)
             changefile(filename, key, dec(datavalue, value))
-        elif "=" in keyvalue:
+        elif bs("=") in keyvalue:
             key, value = keyvalue.split(bs("="), 1)
             changefile(filename, key, value)
         else:
