@@ -29,6 +29,11 @@ TODO
 * Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
 
+Changes from 0.6.7 to 0.6.8
+---------------------------
+* Deal mainly with bytes instead of strings.
+* Handle ISO-8859-1 (Latin1) better, for Python 3.
+
 Changes from 0.6.6 to 0.6.7
 ---------------------------
 * Can use floating point numbers together with += and -=
