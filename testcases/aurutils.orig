@@ -1,0 +1,19 @@
+pkgbase = ldm
+    pkgdesc = A lightweight device mounter
+    pkgver = 0.7
+    pkgrel = 2
+    url = https://github.com/LemonBoy/ldm
+    install = ldm.install
+    arch = i686
+    arch = x86_64
+    arch = armv7h
+    license = MIT
+    depends = udev
+    depends = util-linux
+    depends = glib2
+    provides = ldm
+    conflicts = ldm-git
+    source = ldm-0.7.tar.gz::http://github.com/lemonboy/ldm/archive/v0.7.tar.gz
+    sha256sums = fb464bffec5b7d0680009b43a95881e8c02ec07e84d6f7fb05206d666dc44bdb
+
+pkgname = ldm

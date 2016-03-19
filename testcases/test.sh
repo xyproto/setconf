@@ -39,6 +39,10 @@ start nonewline2
 ../setconf.py -a nonewline2 y=7
 complete nonewline2
 
+start aurutils
+../setconf.py aurutils x+=1
+complete aurutils
+
 echo -n 'Testing nonexisting...'
 ../setconf.py nonexisting x+=1 >/dev/null 2> error.log
 grep Errno error.log \
