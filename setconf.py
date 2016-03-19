@@ -31,6 +31,7 @@ from os.path import exists
 from tempfile import mkstemp
 from subprocess import check_output
 from decimal import Decimal
+from base64 import b64decode
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
@@ -508,6 +509,29 @@ def test_addline():
     return passes
 
 
+def test_latin1():
+    # Test data
+    testcontent = b64decode("SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9Nwo=")
+    testcontent_changed = b64decode("SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9NDIK")
+
+    filename = mkstemp()[1]
+    # Write the testfile
+    file = open(filename, "w")
+    file.write(testcontent)
+    file.close()
+    # Change the file with changefile
+    changefile(filename, "x", "42")
+    # Read the file
+    file = open(filename)
+    newcontent = file.read().split(linesep)[:-1]
+    file.close()
+    # Do the tests
+    passes = True
+    passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
+    print("ISO-8859-1 passes: %s" % (passes))
+    return passes
+
+
 def tests():
     # If one test fails, the rest will not be run
     passes = True
@@ -517,6 +541,7 @@ def tests():
     passes = passes and test_change_multiline()
     passes = passes and test_changefile_multiline()
     passes = passes and test_addline()
+    passes = passes and test_latin1()
     if passes:
         print("All tests pass!")
     else:
@@ -704,3 +729,4 @@ def main(args=argv[1:], exitok=True):
 
 if __name__ == "__main__":
     main()
+
