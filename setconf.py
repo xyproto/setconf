@@ -197,10 +197,9 @@ def changefile(filename, key, value, dummyrun=False):
 
     # Read the file
     try:
-        file = open(filename, 'rb')
-        data = file.read()
-        lines = data.split(NL)[:-1]
-        file.close()
+        with open(filename, 'rb') as f:
+            data = f.read()
+            lines = data.split(NL)[:-1]
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
@@ -218,12 +217,11 @@ def changefile(filename, key, value, dummyrun=False):
     if dummyrun:
         return data != changed_contents
     try:
-        file = open(filename, 'wb')
+        with open(filename, 'wb') as f:
+            f.write(changed_contents)
     except IOError:
         print("No write permission: %s" % (filename))
         sysexit(2)
-    file.write(changed_contents)
-    file.close()
 
 
 def addtofile(filename, line):
@@ -233,8 +231,8 @@ def addtofile(filename, line):
 
     # Read the file
     try:
-        with open(filename, 'rb') as file:
-            data = file.read()
+        with open(filename, 'rb') as f:
+            data = f.read()
             lines = data.split(NL)[:-1]
     except IOError:
         print("Can't read %s" % (filename))
@@ -245,10 +243,10 @@ def addtofile(filename, line):
         lines = [data]
     # Change and write the file
     try:
-        with open(filename, 'wb') as file:
+        with open(filename, 'wb') as f:
             lines.append(line)
             added_data = NL.join(lines) + NL
-            file.write(added_data)
+            f.write(added_data)
     except IOError:
         print("No write permission: %s" % (filename))
         sysexit(2)
@@ -261,14 +259,14 @@ def test_changefile():
         bs("døg = missing") + NL * 3 + bs("æøåÆØÅ") + NL
     filename = mkstemp()[1]
     # Write the testfile
-    with open(filename, 'wb') as file:
-        file.write(testcontent)
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
     # Change the file with changefile
     changefile(filename, "keys", "found")
     changefile(filename, "døg", "missing")
     # Read the file
-    with open(filename, 'rb') as file:
-        newcontent = file.read().split(NL)[:-1]
+    with open(filename, 'rb') as f:
+        newcontent = f.read().split(NL)[:-1]
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
@@ -444,23 +442,20 @@ def changefile_multiline(filename, key, value, endstring=bs("\n")):
 
     # Read the file
     try:
-        file = open(filename, 'rb')
-        data = file.read()
-        file.close()
+        with open(filename, 'rb') as f:
+            data = f.read()
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
     new_contents = change_multiline(data, key, value, endstring)
     try:
-        file = open(filename, 'wb')
-        file.write(new_contents)
+        with open(filename, 'wb') as f:
+            f.write(new_contents)
     except:  # UnicodeEncodeError: not supported by shedskin
         #print("codeEncodeError: Can't change value for %s" % (filename))
         print("Can't change value for %s" % (filename))
         sysexit(2)
-    # finally is not supported by shedskin
-    file.close()
 
 
 def test_changefile_multiline():
@@ -469,16 +464,14 @@ def test_changefile_multiline():
     testcontent_changed = bs("keys := found") + NL + bs("dog = missing") + NL * 3 + bs("æøåÆØÅ")
     filename = mkstemp()[1]
     # Write the testfile
-    file = open(filename, 'wb')
-    file.write(testcontent)
-    file.close()
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
     # Change the file with changefile
     changefile_multiline(filename, "keys", "found")
     changefile_multiline(filename, "dog", "missing")
     # Read the file
-    file = open(filename, 'rb')
-    newcontent = file.read()
-    file.close()
+    with open(filename, 'rb') as f:
+        newcontent = f.read()
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed
@@ -498,8 +491,8 @@ def test_addline():
         NL + bs("cache-ttl=6") + NL
     filename = mkstemp()[1]
     # Write the testfile
-    with open(filename, 'wb') as file:
-        file.write(testcontent)
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
     # Change the file by adding keys and values
     main(["-a", filename, "X", "123"])
     main(["--add", filename, "Y=345"])
@@ -510,8 +503,8 @@ def test_addline():
     main(["-a", filename, "vm.swappiness=1"])
     main(["-a", filename, "cache-ttl=6"])
     # Read the file
-    with open(filename, 'rb') as file:
-        newcontent = file.read()
+    with open(filename, 'rb') as f:
+        newcontent = f.read()
 
     # --- TEST 2 ---
     testcontent_changed2 = bs("x=2") + NL
@@ -521,8 +514,8 @@ def test_addline():
     # Change the file by adding keys and values
     main(["-a", filename, "x=2"])
     # Read the file
-    with open(filename, 'rb') as file2:
-        newcontent2 = file2.read()
+    with open(filename, 'rb') as f:
+        newcontent2 = f.read()
 
     # Do the tests
     passes = True
@@ -542,13 +535,13 @@ def test_latin1():
 
     filename = mkstemp()[1]
     # Write the testfile
-    with open(filename, 'wb') as file:
-        file.write(testcontent)  # already bytes, no need to encode
+    with open(filename, 'wb') as f:
+        f.write(testcontent)  # already bytes, no need to encode
     # Change the file with changefile
     changefile(filename, "x", "42")
     # Read the file
-    with open(filename, 'rb') as file:
-        newcontent = file.read().split(NL)[:-1]
+    with open(filename, 'rb') as f:
+        newcontent = f.read().split(NL)[:-1]
     # Do the tests
     passes = True
     passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
@@ -575,11 +568,10 @@ def tests():
 def create_if_missing(filename):
     if not exists(filename):
         try:
-            f = open(filename, 'wb')
+            open(filename, 'wb').close()
         except IOError:
             print("No write permission: %s" % (filename))
             sysexit(2)
-        f.close()
 
 
 def has_key(data, key):
@@ -680,23 +672,21 @@ def main(args=argv[1:], exitok=True):
         if bs("+=") in keyvalue:
             key, value = keyvalue.split(bs("+="), 1)
             try:
-                f = open(filename, 'rb')
+                with open(filename, 'rb') as f:
+                    data = f.read()
             except IOError:
                 print("Can't read %s" % (filename))
                 sysexit(2)
-            data = f.read()
-            f.close()
             datavalue = get_value(data, key)
             changefile(filename, key, inc(datavalue, value))
         elif bs("-=") in keyvalue:
             key, value = keyvalue.split(bs("-="), 1)
             try:
-                f = open(filename, 'rb')
+                with open(filename, 'rb') as f:
+                    data = f.read()
             except IOError:
                 print("Can't read %s" % (filename))
                 sysexit(2)
-            data = f.read()
-            f.close()
             datavalue = get_value(data, key)
             changefile(filename, key, dec(datavalue, value))
         elif bs("=") in keyvalue:
@@ -727,9 +717,8 @@ def main(args=argv[1:], exitok=True):
             if changefile(filename, key, value, dummyrun=True):
                 changefile(filename, key, value)
             else:
-                f = open(filename, 'rb')
-                data = f.read()
-                f.close()
+                with open(filename, 'rb') as f:
+                    data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
         else:
@@ -751,9 +740,8 @@ def main(args=argv[1:], exitok=True):
                 changefile(filename, key, value)
             else:
                 keyvalue = key + bs("=") + value
-                f = open(filename, 'rb')
-                data = f.read()
-                f.close()
+                with open(filename, 'rb') as f:
+                    data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
         else:
