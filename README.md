@@ -29,6 +29,10 @@ TODO
 * Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
 
+Changes from 0.7 to 0.7.1
+-------------------------
+* Removed a dependency on chardet
+
 Changes from 0.6.8 to 0.7
 -------------------------
 * Fix issue #6, a failing testcase for `+=`.

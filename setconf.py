@@ -33,9 +33,8 @@ from tempfile import mkstemp
 from subprocess import check_output
 from decimal import Decimal
 from base64 import b64decode
-import chardet
 
-VERSION = "0.7"
+VERSION = "0.7.1"
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
