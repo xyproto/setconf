@@ -5,11 +5,11 @@ import sys
 from setuptools import setup
 
 setup(name="setconf",
-      version="0.6.7",
+      version="0.6.8",
       description="Change configuration settings in text files",
       url="http://setconf.roboticoverlords.org/",
       author="Alexander F Rødseth",
-      author_email="rodseth@gmail.com",
+      author_email="xyproto@archlinux.org",
       license="GPLv2",
       py_modules=["setconf"],
       entry_points={
