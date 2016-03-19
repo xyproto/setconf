@@ -26,7 +26,6 @@ TODO
 * An option for removing both the key and the value.
 * Test and fix the combination of -a and multiline markers.
 * Fix the behavior when " is the multiline marker and ":" the delimiter. (the yml format)
-* Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
 
 Changes from 0.7 to 0.7.1
