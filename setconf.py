@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # setconf
@@ -39,6 +39,7 @@ VERSION = "0.7"
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
+
 def bs(x):
     """Convert from string to UTF-8 encoded bytes, if needed"""
     if type(x) != type(b""):
@@ -46,7 +47,8 @@ def bs(x):
     return x
 
 NL = bs(linesep_str)
-ASSIGNMENTS = [bs('=='), bs('=>'), bs('+='), bs('-='), bs('?='), bs('='), bs(':='), bs('::'), bs(':')]
+ASSIGNMENTS = [bs('=='), bs('=>'), bs('+='), bs('-='), bs('?='),
+               bs('='), bs(':='), bs('::'), bs(':')]
 
 
 def parts(line, including_assignment=True):
@@ -187,6 +189,7 @@ tea := yes
     print("Change passes: %s" % (passes))
     return passes
 
+
 def changefile(filename, key, value, dummyrun=False):
     """if dummyrun==True, don't write but return True if changes would have been made"""
 
@@ -223,6 +226,7 @@ def changefile(filename, key, value, dummyrun=False):
     file.write(changed_contents)
     file.close()
 
+
 def addtofile(filename, line):
     """Tries to add a line to a file. UTF-8. No questions asked."""
 
@@ -249,6 +253,7 @@ def addtofile(filename, line):
     except IOError:
         print("No write permission: %s" % (filename))
         sysexit(2)
+
 
 def test_changefile():
     # Test data
@@ -489,9 +494,9 @@ def test_addline():
     # --- TEST 1 ---
     testcontent = bs("# cache-ttl=65000") + NL + bs("MOO=yes") + NL
     testcontent_changed = bs("# cache-ttl=65000") + NL + bs("MOO=no") + NL + \
-            bs("X=123") + NL + bs("Y=345") + NL + bs("Z:=567") + NL + \
-                          bs("FJORD => 999") + NL + bs('vm.swappiness=1') + \
-                          NL + bs("cache-ttl=6") + NL
+        bs("X=123") + NL + bs("Y=345") + NL + bs("Z:=567") + NL + \
+        bs("FJORD => 999") + NL + bs('vm.swappiness=1') + \
+        NL + bs("cache-ttl=6") + NL
     filename = mkstemp()[1]
     # Write the testfile
     with open(filename, 'wb') as file:
@@ -531,13 +536,15 @@ def test_addline():
 
 def test_latin1():
     # Test data
-    testcontent = b64decode("SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9Nwo=")
-    testcontent_changed = b64decode("SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9NDIK")
+    testcontent = b64decode(
+        "SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9Nwo=")
+    testcontent_changed = b64decode(
+        "SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9NDIK")
 
     filename = mkstemp()[1]
     # Write the testfile
     with open(filename, 'wb') as file:
-        file.write(testcontent) # already bytes, no need to encode
+        file.write(testcontent)  # already bytes, no need to encode
     # Change the file with changefile
     changefile(filename, "x", "42")
     # Read the file
@@ -588,6 +595,7 @@ def has_key(data, key):
             return True
     return False
 
+
 def get_value(data, key):
     """Return the first value for a given key."""
     lines = data.split(NL)[:-1]
@@ -604,11 +612,14 @@ def get_value(data, key):
             return second
     return bs("")
 
+
 def strip_trailing_zeros(s):
     return s.rstrip(bs('0')).rstrip(bs('.')) if bs('.') in s else s
 
+
 def byte2decimal(b):
     return Decimal(b.decode("utf-8", "ignore"))
+
 
 def inc(startvalue, s):
     """Increase the number in the byte string with the given byte string,
@@ -620,6 +631,7 @@ def inc(startvalue, s):
 
     return strip_trailing_zeros(result)
 
+
 def dec(startvalue, s):
     """Decrease the number in the string with the given string,
     or return the same string."""
@@ -629,6 +641,7 @@ def dec(startvalue, s):
         return s
 
     return strip_trailing_zeros(result)
+
 
 def main(args=argv[1:], exitok=True):
     if len(args) == 1:
@@ -756,4 +769,3 @@ def main(args=argv[1:], exitok=True):
 
 if __name__ == "__main__":
     main()
-
