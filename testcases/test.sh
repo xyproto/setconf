@@ -40,7 +40,7 @@ start nonewline2
 complete nonewline2
 
 start aurutils
-../setconf.py aurutils x+=1
+../setconf.py aurutils pkgrel+=1
 complete aurutils
 
 echo -n 'Testing nonexisting...'
