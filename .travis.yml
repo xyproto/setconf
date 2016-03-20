@@ -9,5 +9,6 @@ python:
 
 install:
   - pip install pytest
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]] ; then pip install argparse ; fi
 
 script: ./setconf.py --test

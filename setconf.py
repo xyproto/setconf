@@ -31,10 +31,9 @@ from os import linesep as linesep_str
 from os.path import exists
 from tempfile import mkstemp
 from decimal import Decimal
+import argparse
 
 VERSION = "0.7.1"
-
-# TODO: Use optparse or argparse if shedskin is no longer a target.
 
 
 def bs(x):
@@ -328,43 +327,52 @@ def dec(startvalue, s):
     return strip_trailing_zeros(result)
 
 
-def main(args=argv[1:], exitok=True):
-    if len(args) == 1:
-        if args[0] in ["-t", "--test"]:
-            import pytest
-            rc = pytest.main(args=[])
-            sysexit(rc)
-        elif args[0] in ["-h", "--help"]:
-            print("setconf " + VERSION)
-            print("")
-            print("Changes a key in a text file to a given value")
-            print("")
-            print("Syntax:")
-            print("\tsetconf filename key value [end string for multiline value]")
-            print("")
-            print("Options:")
-            print("\t-h or --help\t\tthis text")
-            print("\t-t or --test\t\tinternal self test")
-            print("\t-v or --version\t\tversion number")
-            print("\t-a or --add\t\tadd the option if it doesn't exist")
-            print("\t\t\t\tcreates the file if needed")
-            #print("\t-r or --remove\t\tremove the option if it exist")
-            print("")
-            print("Examples:")
-            print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
-            print("\tsetconf Makefile CC clang")
-            print("\tsetconf my.conf x=42")
-            print("\tsetconf PKGBUILD sha256sums \"('123abc' 'abc123')\" ')'")
-            print("\tsetconf app.py NUMS \"[1, 2, 3]\" ']'")
-            print("\tsetconf -a server.conf ABC 123")
-            #print("\tsetconf -r server.conf ABC")
-            print("")
-        elif args[0] in ["-v", "--version"]:
-            print(VERSION)
-    elif len(args) == 2:
+def main(args=None):
+    description = """\
+setconf {version}
+
+Changes a key in a text file to a given value
+
+Syntax:
+    setconf filename key value [end string for multiline value]
+""".format(version=VERSION)
+
+    epilog="""
+Examples:
+
+    setconf Makefile.defaults NETSURF_USE_HARU_PDF NO
+    setconf Makefile CC clang
+    setconf my.conf x=42
+    setconf PKGBUILD sha256sums "('123abc' 'abc123')" ')'
+    setconf app.py NUMS "[1, 2, 3]" ']'
+    setconf -a server.conf ABC 123"
+"""
+    parser = argparse.ArgumentParser(prog="setconf",
+                description=description,
+                epilog=epilog,
+                formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("--version", action="version", version=VERSION)
+    parser.add_argument("-t", "--test", action="store_true",
+                        help="internal self test")
+    parser.add_argument("-a", "--add", action="store_true",
+                        help="add the option if it doesn't exist\n"
+                             "creates the file if needed")
+    parser.add_argument("filename", nargs="?")
+    parser.add_argument("key", nargs="?") # for setconf x=42
+    parser.add_argument("value", nargs="?") # for setconf key val
+    parser.add_argument("endstring", nargs="?") # for multiline
+    args = parser.parse_args(args=args)
+    if args.test:
+        import pytest
+        rc = pytest.main(args=[])
+        sysexit(rc)
+    filename = args.filename
+    if not filename:
+        parser.print_help()
+        sysexit(1)
+    if not args.value and not args.add:
         # Single line replace: "x=123" or "x+=2"
-        filename = args[0]
-        keyvalue = bs(args[1])
+        keyvalue = bs(args.key)
         if bs("+=") in keyvalue:
             key, value = keyvalue.split(bs("+="), 1)
             try:
@@ -390,11 +398,11 @@ def main(args=argv[1:], exitok=True):
             changefile(filename, key, value)
         else:
             sysexit(2)
-    elif len(args) == 3:
-        if args[0] in ["-a", "--add"]:
-            # Single line replace/add ("x 123")
-            filename = args[1]
-            keyvalue = bs(args[2])
+        return
+    if args.add:
+        if not args.value:
+            # Single line add with no value
+            keyvalue = bs(args.key)
 
             create_if_missing(filename)
 
@@ -418,16 +426,9 @@ def main(args=argv[1:], exitok=True):
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
         else:
-            # Single line replace ("x 123")
-            filename = args[0]
-            key = bs(args[1])
-            value = bs(args[2])
-            changefile(filename, key, value)
-    elif len(args) == 4:
-        if args[0] in ["-a", "--add"]:
-            filename = args[1]
-            key = bs(args[2])
-            value = bs(args[3])
+            # Single line add with value
+            key = bs(args.key)
+            value = bs(args.value)
 
             create_if_missing(filename)
 
@@ -440,15 +441,16 @@ def main(args=argv[1:], exitok=True):
                     data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
-        else:
-            # Multiline replace
-            filename = args[0]
-            key = bs(args[1])
-            value = bs(args[2])
-            endstring = bs(args[3])
-            changefile_multiline(filename, key, value, endstring)
     else:
-        sysexit(1)
+        if args.endstring:
+            key = bs(args.key)
+            value = bs(args.value)
+            endstring = bs(args.endstring)
+            changefile_multiline(filename, key, value, endstring)
+        else:
+            value = bs(args.value)
+            changefile(filename, key, value)
+
 
 if __name__ == "__main__":
     main()
