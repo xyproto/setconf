@@ -15,36 +15,36 @@ complete() {
 }
 
 start PKGBUILD
-../setconf.py PKGBUILD pkgname=asdfasdf
-../setconf.py PKGBUILD pkgrel+=1
+../setconf.exe PKGBUILD pkgname=asdfasdf
+../setconf.exe PKGBUILD pkgrel+=1
 complete PKGBUILD
 
 start testcase2
-../setconf.py testcase2 x+=2
-../setconf.py testcase2 x-=3
-../setconf.py testcase2 z+=1000
-../setconf.py testcase2 d1-=.1
-../setconf.py testcase2 d1+=0.3
-../setconf.py testcase2 d2+=.02
-../setconf.py testcase2 d2-=0.01
-../setconf.py testcase2 s+=pie
-../setconf.py testcase2 y-=0.31
+../setconf.exe testcase2 x+=2
+../setconf.exe testcase2 x-=3
+../setconf.exe testcase2 z+=1000
+../setconf.exe testcase2 d1-=.1
+../setconf.exe testcase2 d1+=0.3
+../setconf.exe testcase2 d2+=.02
+../setconf.exe testcase2 d2-=0.01
+../setconf.exe testcase2 s+=pie
+../setconf.exe testcase2 y-=0.31
 complete testcase2
 
 start nonewline
-../setconf.py nonewline x=3
+../setconf.exe nonewline x=3
 complete nonewline
 
 start nonewline2
-../setconf.py -a nonewline2 y=7
+../setconf.exe -a nonewline2 y=7
 complete nonewline2
 
 start aurutils
-../setconf.py aurutils pkgrel+=1
+../setconf.exe aurutils pkgrel+=1
 complete aurutils
 
 echo -n 'Testing nonexisting...'
-../setconf.py nonexisting x+=1 >/dev/null 2> error.log
+../setconf.exe nonexisting x+=1 >/dev/null 2> error.log
 grep Errno error.log \
   && (echo FAIL; cat error.log) \
   || (echo ok; rm -f error.log)
