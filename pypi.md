@@ -7,4 +7,4 @@
 
 ## Documentation
 
-    [Sharing your labor of love](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
+* [Sharing your labor of love](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
