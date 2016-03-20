@@ -1,13 +1,13 @@
 #!/bin/sh
 
-function start() {
+start() {
   filename=$1
   echo -n "Testing $filename..."
   rm -f "$filename"
   cp "$filename.orig" "$filename"
 }
 
-function complete() {
+complete() {
   filename=$1
   diff "$filename" "$filename.correct" \
     && (echo 'ok'; rm -f "$filename") \
@@ -48,4 +48,3 @@ echo -n 'Testing nonexisting...'
 grep Errno error.log \
   && (echo FAIL; cat error.log) \
   || (echo ok; rm -f error.log)
-
