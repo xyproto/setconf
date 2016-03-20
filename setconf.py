@@ -30,7 +30,6 @@ from sys import exit as sysexit
 from os import linesep as linesep_str
 from os.path import exists
 from tempfile import mkstemp
-from subprocess import check_output
 from decimal import Decimal
 from base64 import b64decode
 
