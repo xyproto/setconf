@@ -5,7 +5,7 @@ setconf
 
 Setconf is a small utility for changing settings in configuration textfiles.
 
-Patches are welcome.
+Pull requests are welcome.
 
 
 Compile time features
@@ -25,7 +25,7 @@ TODO
 * A way to add an option with `-a` after a given string occurs.
 * An option for removing both the key and the value.
 * Test and fix the combination of `-a` and multiline markers.
-* Fix the behavior when `"` is the multiline marker and `:` the delimiter (the yml format).
+* Fix the behavior when `"` is the multiline marker and `:` the delimiter (the [yml](https://fdik.org/yml/) format).
 * Refactor
 
 Changes from 0.7 to 0.7.1
