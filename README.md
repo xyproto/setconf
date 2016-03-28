@@ -15,17 +15,17 @@ Compile time features
 
 TODO
 ----
-* -u option for uncommenting a key while setting the value (removing "# "). Should uncomment by default?
-* -c option for commenting out a key (adding "# ") or changing a key while keeping it as commented out.
+* `-u` option for uncommenting a key while setting the value (removing `# `). Should uncomment by default?
+* `-c` option for commenting out a key (adding "# ") or changing a key while keeping it as commented out.
 * A way to change only the n'th occurence of a configuration option
-* Add support for changing values of "#define" and "(setq" as well?
+* Add support for changing values of `#define` and `(setq` as well?
 * Rewrite in Go?
-* An option for removing the configuration value instead of using ''.
-* Optimize the code that is used for adding options with -a.
-* A way to add an option with -a after a given string occurs.
+* An option for removing the configuration value instead of using `''`.
+* Optimize the code that is used for adding options with `-a`.
+* A way to add an option with `-a` after a given string occurs.
 * An option for removing both the key and the value.
-* Test and fix the combination of -a and multiline markers.
-* Fix the behavior when " is the multiline marker and ":" the delimiter. (the yml format)
+* Test and fix the combination of `-a` and multiline markers.
+* Fix the behavior when `"` is the multiline marker and `:` the delimiter (the yml format).
 * Refactor
 
 Changes from 0.7 to 0.7.1
