@@ -9,3 +9,7 @@ setconf.build
 *.egg-info
 build
 dist
+
+Makefile
+setconf.cpp
+setconf.hpp

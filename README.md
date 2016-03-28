@@ -1,6 +1,8 @@
 setconf
 =========
 
+# DOES NOT CURRENTLY BUILD WITH SHEDSKIN
+
 [![Build Status](https://travis-ci.org/xyproto/setconf.svg?branch=master)](https://travis-ci.org/xyproto/setconf)
 
 Setconf is a small utility for changing settings in configuration textfiles.
