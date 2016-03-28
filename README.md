@@ -28,7 +28,7 @@ TODO
 * Fix the behavior when `"` is the multiline marker and `:` the delimiter (the [yml](https://fdik.org/yml/) format).
 * Refactor
 
-Changes from 0.7.1 to 0.7.1
+Changes from 0.7.1 to 0.7.2
 ---------------------------
 * Fixed an issue that only happened on Python 3.2.
 * Several minor changes.
