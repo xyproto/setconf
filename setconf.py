@@ -18,6 +18,7 @@
 # Jul 2013
 # Nov 2013
 # Aug 2014
+# Oct 2014
 #
 
 from sys import argv
@@ -29,7 +30,7 @@ from subprocess import check_output
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
-VERSION = "0.6.2"
+VERSION = "0.6.3"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
 
 def get_encoding(filename):
@@ -423,11 +424,11 @@ def test_changefile_multiline():
 
 def test_addline():
     # --- TEST 1 ---
-    testcontent = "MOO=yes" + linesep
-    testcontent_changed = "MOO=no" + linesep + "X=123" + linesep + \
-                          "Y=345" + linesep + "Z:=567" + linesep + \
-                          "FJORD => 999" + linesep + 'vm.swappiness=1' \
-                          + linesep
+    testcontent = "# cache-ttl=65000" + linesep + "MOO=yes" + linesep
+    testcontent_changed = "# cache-ttl=65000" + linesep + "MOO=no" + linesep + \
+            "X=123" + linesep + "Y=345" + linesep + "Z:=567" + linesep + \
+                          "FJORD => 999" + linesep + 'vm.swappiness=1' + \
+                          linesep + "cache-ttl=6" + linesep
     filename = mkstemp()[1]
     # Write the testfile
     file = open(filename, "w")
@@ -441,6 +442,7 @@ def test_addline():
     main(["--add", filename, "MOO", "no"])
     main(["-a", filename, "vm.swappiness=1"])
     main(["-a", filename, "vm.swappiness=1"])
+    main(["-a", filename, "cache-ttl=6"])
     # Read the file
     file = open(filename, "r")
     newcontent = file.read()
@@ -463,6 +465,7 @@ def test_addline():
     passes = True
     passes = passes and (newcontent == testcontent_changed)
     passes = passes and (newcontent2 == testcontent_changed2)
+
     print("Addline passes: %s" % (passes))
     return passes
 
@@ -486,6 +489,19 @@ def create_if_missing(filename):
     if not exists(filename):
         f = open(filename, "w")
         f.close()
+
+
+def has_key(data, key):
+    """Check if the given key exists in the given data."""
+    lines = data.split(linesep)[:-1]
+    for line in lines:
+        if not line.strip():
+            # Skip blank lines
+            continue
+        first = firstpart(line, False)
+        if key == first:
+            return True
+    return False
 
 
 def main(args=argv[1:], exitok=True):
@@ -553,7 +569,7 @@ def main(args=argv[1:], exitok=True):
                 f = open(filename)
                 data = f.read()
                 f.close()
-                if keyvalue not in data:
+                if not has_key(data, key):
                     addtofile(filename, keyvalue)
         else:
             # Single line replace ("x 123")
@@ -577,7 +593,7 @@ def main(args=argv[1:], exitok=True):
                 f = open(filename)
                 data = f.read()
                 f.close()
-                if keyvalue not in data:
+                if not has_key(data, key):
                     addtofile(filename, keyvalue)
         else:
             # Multiline replace

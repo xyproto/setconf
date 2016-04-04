@@ -29,6 +29,10 @@ TODO
 * Make it behave like in Python 2 when running with Python 3 and changing an ISO-8859-1 file
 * Refactor
 
+Changes from 0.6.2 to 0.6.3
+---------------------------
+* Fixed a problem with -a that occurred when a key existed but was commented out
+* Added regression test
 
 Changes from 0.6.1 to 0.6.2
 ---------------------------
