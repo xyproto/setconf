@@ -19,23 +19,17 @@
 # Nov 2013
 #
 
-# Python version check
-from sys import version_info, exit
-if version_info[0] < 3:
-    print('\033[31msetconf requires Python 3 or later\033[0m')
-    exit(1)
-
-# Does not import optparse or argparse because they
-# are not supported by shedskin yet.
-
 from sys import argv
 from sys import exit as sysexit
 from os import linesep
 from os.path import exists
 from tempfile import mkstemp
 
-VERSION = "0.6.1"
+# TODO: Use optparse or argparse if shedskin is no longer a target.
+
+VERSION = "0.6.2"
 ASSIGNMENTS = ['==', '=>', '=', ':=', '::', ':']
+
 
 def firstpart(line, including_assignment=True):
     stripline = line.strip()
@@ -53,7 +47,7 @@ def firstpart(line, including_assignment=True):
     if len(found) == 1:
         # Only one assignment were found
         assignment = found[0]
-    elif found: # > 1
+    elif found:  # > 1
         # If several assignments are found, use the first one
         firstpos = len(line)
         firstassignment = ""
@@ -72,6 +66,7 @@ def firstpart(line, including_assignment=True):
     # No assignments were found
     return None
 
+
 def changeline(line, newvalue):
     first = firstpart(line)
     if first:
@@ -84,15 +79,22 @@ def changeline(line, newvalue):
     else:
         return line
 
+
 def test_changeline():
     passes = True
     passes = passes and changeline("rabbits = DUMB", "cool") == "rabbits = cool"
-    passes = passes and changeline("for ever and ever : never", "and ever") == "for ever and ever : and ever"
-    passes = passes and changeline("     for  ever  and  Ever   :=    beaver", "TURTLE") == "     for  ever  and  Ever   := TURTLE"
+    passes = passes and changeline(
+        "for ever and ever : never",
+        "and ever") == "for ever and ever : and ever"
+    passes = passes and changeline(
+        "     for  ever  and  Ever   :=    beaver",
+        "TURTLE") == "     for  ever  and  Ever   := TURTLE"
     passes = passes and changeline("CC=g++", "baffled") == "CC=baffled"
     passes = passes and changeline("CC =\t\tg++", "baffled") == "CC =\tbaffled"
     passes = passes and changeline("cabal ==1.2.3", "1.2.4") == "cabal ==1.2.4"
-    passes = passes and changeline("TMPROOT=${TMPDIR:=/tmp}", "/nice/pants") == "TMPROOT=/nice/pants"
+    passes = passes and changeline(
+        "TMPROOT=${TMPDIR:=/tmp}",
+        "/nice/pants") == "TMPROOT=/nice/pants"
     passes = passes and changeline("    # ost = 2", "3") == "    # ost = 2"
     passes = passes and changeline(" // ost = 2", "3") == " // ost = 2"
     passes = passes and changeline("  ost = 2", "3") == "  ost = 3"
@@ -100,6 +102,7 @@ def test_changeline():
     passes = passes and changeline("æøå =>\t123", "256") == "æøå =>\t256"
     print("Changeline passes: %s" % (passes))
     return passes
+
 
 def change(lines, key, value):
     newlines = []
@@ -116,6 +119,7 @@ def change(lines, key, value):
         else:
             newlines.append(line)
     return newlines
+
 
 def test_change():
     testcontent = """LIGHTS =    ON
@@ -137,11 +141,12 @@ tea := yes
     print("Change passes: %s" % (passes))
     return passes
 
+
 def changefile(filename, key, value, dummyrun=False):
     """if dummyrun==True, don't write but return True if changes would have been made"""
     # Read the file
     try:
-        file = open(filename, encoding="utf-8")
+        file = open(filename)
         data = file.read()
         lines = data.split(linesep)[:-1]
         file.close()
@@ -155,15 +160,16 @@ def changefile(filename, key, value, dummyrun=False):
         changed_contents += linesep
     if dummyrun:
         return data != changed_contents
-    file = open(filename, "w", encoding="utf-8")
+    file = open(filename, "w")
     file.write(changed_contents)
     file.close()
+
 
 def addtofile(filename, line):
     """Tries to add a line to a file. UTF-8. No questions asked."""
     # Read the file
     try:
-        file = open(filename, encoding="utf-8")
+        file = open(filename)
         data = file.read()
         lines = data.split(linesep)[:-1]
         file.close()
@@ -171,26 +177,28 @@ def addtofile(filename, line):
         print("Can't read %s" % (filename))
         sysexit(2)
     # Change and write the file
-    file = open(filename, "w", encoding="utf-8")
+    file = open(filename, "w")
     lines.append(line)
     added_data = linesep.join(lines) + linesep
     file.write(added_data)
     file.close()
 
+
 def test_changefile():
     # Test data
     testcontent = "keys := missing" + linesep + "døg = found" + linesep * 3 + "æøåÆØÅ" + linesep
-    testcontent_changed = "keys := found" + linesep + "døg = missing" + linesep * 3 + "æøåÆØÅ" + linesep
+    testcontent_changed = "keys := found" + linesep + \
+        "døg = missing" + linesep * 3 + "æøåÆØÅ" + linesep
     filename = mkstemp()[1]
     # Write the testfile
-    file = open(filename, "w", encoding="utf-8")
+    file = open(filename, "w")
     file.write(testcontent)
     file.close()
     # Change the file with changefile
     changefile(filename, "keys", "found")
     changefile(filename, "døg", "missing")
     # Read the file
-    file = open(filename, encoding="utf-8")
+    file = open(filename)
     newcontent = file.read().split(linesep)[:-1]
     file.close()
     # Do the tests
@@ -198,6 +206,7 @@ def test_changefile():
     passes = passes and newcontent == testcontent_changed.split(linesep)[:-1]
     print("Changefile passes: %s" % (passes))
     return passes
+
 
 def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfrom=0):
     if key not in data:
@@ -208,25 +217,26 @@ def change_multiline(data, key, value, endstring=linesep, verbose=True, searchfr
         return data
     startpos = data.find(key, searchfrom)
     if endstring in data:
-        endpos = data.find(endstring, startpos+1)
+        endpos = data.find(endstring, startpos + 1)
     else:
         endpos = len(data) - 1
     before = data[:startpos]
-    between = data[startpos:endpos+1]
+    between = data[startpos:endpos + 1]
 
     linestartpos = data[:startpos].rfind(linesep) + 1
-    line = data[linestartpos:endpos+1]
+    line = data[linestartpos:endpos + 1]
     # If the first part of the line is not a key (could be because it's commented out)...
     if not firstpart(line):
         # Search again, from endpos this time
         return change_multiline(data, key, value, endstring, verbose, endpos)
- 
-    after = data[endpos+len(endstring):]
+
+    after = data[endpos + len(endstring):]
     newbetween = changeline(between, value)
     if between.endswith(linesep):
         newbetween += linesep
     result = before + newbetween + after
     return result
+
 
 def test_change_multiline():
     passes = True
@@ -237,63 +247,72 @@ def test_change_multiline():
     b = testcontent_changed
     extracheck = testcontent.replace("missing", "found") == testcontent_changed
     passes = passes and a == b and extracheck
-    if not passes: print("FAIL1")
+    if not passes:
+        print("FAIL1")
     # test 2
     testcontent = 'blabla\nOST=(a\nb)\n\nblabla\nÆØÅ'
     testcontent_changed = 'blabla\nOST=(c d)\n\nblabla\nÆØÅ'
     a = change_multiline(testcontent, "OST", "(c d)", ")")
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL2")
+    if not passes:
+        print("FAIL2")
     # test 3
     testcontent = 'bläblä=1'
     testcontent_changed = 'bläblä=2'
     a = change_multiline(testcontent, "bläblä", "2")
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL3")
+    if not passes:
+        print("FAIL3")
     # test 4
     testcontent = "\n"
     testcontent_changed = "\n"
     a = change_multiline(testcontent, "blablañ", "ost")
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL4")
+    if not passes:
+        print("FAIL4")
     # test 5
     testcontent = ""
     testcontent_changed = ""
     a = change_multiline(testcontent, "blabla", "ost")
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL5")
+    if not passes:
+        print("FAIL5")
     # test 6
     testcontent = "a=(1, 2, 3"
     testcontent_changed = "a=(1, 2, 3"
     a = change_multiline(testcontent, "a", "(4, 5, 6)", ")", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL6")
+    if not passes:
+        print("FAIL6")
     # test 7
     testcontent = "a=(1, 2, 3\nb=(7, 8, 9)"
     testcontent_changed = "a=(4, 5, 6)"
     a = change_multiline(testcontent, "a", "(4, 5, 6)", ")")
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL7")
+    if not passes:
+        print("FAIL7")
     # test 8
     testcontent = "a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)"
     testcontent_changed = "a=(0, 0, 0)\nb=(4, 5, 6)\nc=(7, 8, 9)"
     a = change_multiline(testcontent, "b", "(4, 5, 6)", ")")
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL8")
+    if not passes:
+        print("FAIL8")
     # test 9
     testcontent = "a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n"
     testcontent_changed = "a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n"
     a = change_multiline(testcontent, "b", "(4, 5, 6)", "]", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL9")
+    if not passes:
+        print("FAIL9")
     # test 10
     testcontent = """
 source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
@@ -307,7 +326,7 @@ md5sums=('5592eaf4b8c4012edcd4f0fc6e54c09c'
 
 build() {
   cd "$srcdir/ManiaDrive-$pkgver-linux-i386"
-""" 
+"""
     testcontent_changed = """
 source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
         "maniadrive.desktop"
@@ -321,29 +340,33 @@ build() {
     a = change_multiline(testcontent, "md5sums", "('123abc' 'abc123')", ")", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL10")
+    if not passes:
+        print("FAIL10")
     # test 11
     testcontent = "x=(0, 0, 0)\nCHEESE\nz=2\n"
     testcontent_changed = "x=(4, 5, 6)\nz=2\n"
     a = change_multiline(testcontent, "x", "(4, 5, 6)", "CHEESE", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL11")
+    if not passes:
+        print("FAIL11")
     # test 12
     testcontent = "# md5sum=('abc123')\nmd5sum=('def456')\nmd5sum=('ghi789')\n"
     testcontent_changed = "# md5sum=('abc123')\nmd5sum=('OST')\nmd5sum=('ghi789')\n"
     a = change_multiline(testcontent, "md5sum", "('OST')", "\n", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
-    if not passes: print("FAIL12")
+    if not passes:
+        print("FAIL12")
     # result
     print("Change multiline passes: %s" % (passes))
     return passes
 
+
 def changefile_multiline(filename, key, value, endstring="\n"):
     # Read the file
     try:
-        file = open(filename, encoding="utf-8")
+        file = open(filename)
         data = file.read()
         file.close()
     except IOError:
@@ -352,14 +375,15 @@ def changefile_multiline(filename, key, value, endstring="\n"):
     # Change and write the file
     new_contents = change_multiline(data, key, value, endstring)
     try:
-        file = open(filename, "w", encoding="utf-8")
+        file = open(filename, "w")
         file.write(new_contents)
-    except: # UnicodeEncodeError: not supported by shedskin
+    except:  # UnicodeEncodeError: not supported by shedskin
         #print("codeEncodeError: Can't change value for %s" % (filename))
         print("Can't change value for %s" % (filename))
         sysexit(2)
     # finally is not supported by shedskin
     file.close()
+
 
 def test_changefile_multiline():
     # Test data
@@ -367,14 +391,14 @@ def test_changefile_multiline():
     testcontent_changed = "keys := found" + linesep + "dog = missing" + linesep * 3 + "æøåÆØÅ"
     filename = mkstemp()[1]
     # Write the testfile
-    file = open(filename, "w", encoding="utf-8")
+    file = open(filename, "w")
     file.write(testcontent)
     file.close()
     # Change the file with changefile
     changefile_multiline(filename, "keys", "found")
     changefile_multiline(filename, "dog", "missing")
     # Read the file
-    file = open(filename, "r", encoding="utf-8")
+    file = open(filename, "r")
     newcontent = file.read()
     file.close()
     # Do the tests
@@ -385,6 +409,8 @@ def test_changefile_multiline():
 
 # Note that this test function may cause sysexit to be called if it fails
 # because it calls the main function directly
+
+
 def test_addline():
     # --- TEST 1 ---
     testcontent = "MOO=yes" + linesep
@@ -394,7 +420,7 @@ def test_addline():
                           + linesep
     filename = mkstemp()[1]
     # Write the testfile
-    file = open(filename, "w", encoding="utf-8")
+    file = open(filename, "w")
     file.write(testcontent)
     file.close()
     # Change the file by adding keys and values
@@ -406,7 +432,7 @@ def test_addline():
     main(["-a", filename, "vm.swappiness=1"])
     main(["-a", filename, "vm.swappiness=1"])
     # Read the file
-    file = open(filename, "r", encoding="utf-8")
+    file = open(filename, "r")
     newcontent = file.read()
     file.close()
 
@@ -419,7 +445,7 @@ def test_addline():
     # Change the file by adding keys and values
     main(["-a", filename, "x=2"])
     # Read the file
-    file2 = open(filename, "r", encoding="utf-8")
+    file2 = open(filename, "r")
     newcontent2 = file2.read()
     file2.close()
 
@@ -429,6 +455,7 @@ def test_addline():
     passes = passes and (newcontent2 == testcontent_changed2)
     print("Addline passes: %s" % (passes))
     return passes
+
 
 def tests():
     # If one test fails, the rest will not be run
@@ -444,10 +471,12 @@ def tests():
     else:
         print("Tests fail.")
 
+
 def create_if_missing(filename):
     if not exists(filename):
         f = open(filename, "w")
         f.close()
+
 
 def main(args=argv[1:], exitok=True):
     if len(args) == 1:

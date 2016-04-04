@@ -5,11 +5,12 @@ Setconf is a small utility for changing settings in configuration textfiles.
 
 Patches are welcome.
 
+
 Requirements
 ------------
-* Only Python 3
+* Only Python
 * Alternatively, it can be compiled to native with <a href="http://nuitka.net/">nuitka</a>. These parameters should work: `--exe --lto --python-version=3.3`
-* One of the tests fails with <a href="http://code.google.com/p/shedskin">shedskin</a> (and it does not support mkstemp), otherwise that would be a possiblity too.
+* One of the tests fails with <a href="http://code.google.com/p/shedskin">shedskin</a> (and shedskin does not support mkstemp), otherwise that would be a possiblity too.
 
 
 TODO
@@ -24,6 +25,11 @@ TODO
 * An option for removing the configuration value instead of using ''
 * Optimize the code that is used for adding options with -a
 * An option for removing both the key and the value
+
+
+Changes from 0.6.1 to 0.6.2
+---------------------------
+* Now runs on Python 2 and Python 3 (tested with 2.4, 2.5, 2.6, 2.7 and 3.3)
 
 Changes from 0.6 to 0.6.1
 -------------------------
