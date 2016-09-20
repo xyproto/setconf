@@ -1,9 +1,11 @@
 setconf
-=========
+=======
 
 [![Build Status](https://travis-ci.org/xyproto/setconf.svg?branch=master)](https://travis-ci.org/xyproto/setconf)
 
 Setconf is a small utility for changing settings in configuration textfiles.
+
+It has no dependencies except the built-in Python modules.
 
 Pull requests are welcome.
 
@@ -19,7 +21,7 @@ TODO
 * `-c` option for commenting out a key (adding "# ") or changing a key while keeping it as commented out.
 * A way to change only the n'th occurence of a configuration option
 * Add support for changing values of `#define` and `(setq` as well?
-* Rewrite in Go?
+* Rewrite in a compiled language?
 * An option for removing the configuration value instead of using `''`.
 * Optimize the code that is used for adding options with `-a`.
 * A way to add an option with `-a` after a given string occurs.
@@ -27,6 +29,11 @@ TODO
 * Test and fix the combination of `-a` and multiline markers.
 * Fix the behavior when `"` is the multiline marker and `:` the delimiter (the [yml](https://fdik.org/yml/) format).
 * Refactor
+
+Changes from 0.7.2 to 0.7.3
+---------------------------
+
+* Can change single-line `#define` values by using the `-d` flag.
 
 Changes from 0.7.1 to 0.7.2
 ---------------------------
