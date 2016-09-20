@@ -7,5 +7,10 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.5-dev"
+  - "nightly"
+  - "pypy"
 
-script: ./setconf.py --test
+script:
+  - ./setconf.py --test
+  - cd testcases && ./test.sh

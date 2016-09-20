@@ -145,7 +145,7 @@ def test_changeline():
     return passes
 
 
-def change(lines, key, value):
+def change(lines, key, value, define=False):
     key = bs(key)
     value = bs(value)
 
@@ -154,7 +154,17 @@ def change(lines, key, value):
         if not line.strip():
             newlines.append(line)
             continue
-        firstp = firstpart(line, False)
+        if define:
+            if line.strip().startswith(b"#define") and line.count(b" ") >= 2:
+                firstp = line.split()[1].strip()
+                oldvalue = line.split()[2].strip()
+                if firstp == key:
+                    newlines.append(line.replace(oldvalue, value))
+                    continue
+            newlines.append(line)
+            continue
+        else:
+            firstp = firstpart(line, False)
         if not firstp:
             newlines.append(line)
             continue
@@ -187,8 +197,23 @@ tea := yes
     print("Change passes: %s" % (passes))
     return passes
 
+def test_change_define():
+    passes = True
 
-def changefile(filename, key, value, dummyrun=False):
+    testcontent = b"#define X 12"
+    testcontent_changed = b"#define X 42"
+    output = change([testcontent], "X", "42", define=True)[0]
+    passes = passes and output == testcontent_changed
+
+    testcontent = b"   #define   X    12"
+    testcontent_changed = b"   #define   X    42"
+    output = change([testcontent], "X", "42", define=True)[0]
+    passes = passes and output == testcontent_changed
+
+    print("Change define passes: %s" % (passes))
+    return passes
+
+def changefile(filename, key, value, dummyrun=False, define=False):
     """if dummyrun==True, don't write but return True if changes would have been made"""
 
     key = bs(key)
@@ -209,7 +234,7 @@ def changefile(filename, key, value, dummyrun=False):
     elif not data.endswith(NL):
         final_nl = False
     # Change and write the file
-    changed_contents = NL.join(change(lines, key, value))
+    changed_contents = NL.join(change(lines, key, value, define=define))
     # Only add a final newline if the original contents had one at the end
     if final_nl:
         changed_contents += NL
@@ -273,7 +298,7 @@ def test_changefile():
     return passes
 
 
-def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0):
+def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0, define=False):
 
     data = bs(data)
     key = bs(key)
@@ -299,7 +324,7 @@ def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0)
     # If the first part of the line is not a key (could be because it's commented out)...
     if not firstpart(line):
         # Search again, from endpos this time
-        return change_multiline(data, key, value, endstring, verbose, endpos)
+        return change_multiline(data, key, value, endstring, verbose, endpos, define=define)
 
     after = data[endpos + len(endstring):]
     newbetween = changeline(between, value)
@@ -553,6 +578,7 @@ def tests():
     passes = True
     passes = passes and test_changeline()
     passes = passes and test_change()
+    passes = passes and test_change_define()
     passes = passes and test_changefile()
     passes = passes and test_change_multiline()
     passes = passes and test_changefile_multiline()
@@ -650,6 +676,7 @@ def main(args=argv[1:], exitok=True):
             print("\t-t or --test\t\tinternal self test")
             print("\t-v or --version\t\tversion number")
             print("\t-a or --add\t\tadd the option if it doesn't exist")
+            print("\t-d or --define\t\tset a #define")
             print("\t\t\t\tcreates the file if needed")
             #print("\t-r or --remove\t\tremove the option if it exist")
             print("")
@@ -660,6 +687,7 @@ def main(args=argv[1:], exitok=True):
             print("\tsetconf PKGBUILD sha256sums \"('123abc' 'abc123')\" ')'")
             print("\tsetconf app.py NUMS \"[1, 2, 3]\" ']'")
             print("\tsetconf -a server.conf ABC 123")
+            print("\tsetconf -d linux/printk.h CONSOLE_LOGLEVEL_DEFAULT=4")
             #print("\tsetconf -r server.conf ABC")
             print("")
         elif args[0] in ["-v", "--version"]:
@@ -701,7 +729,6 @@ def main(args=argv[1:], exitok=True):
 
             create_if_missing(filename)
 
-            # Change the file if possible, if not, add the key value
             assignment = None
             special = None
             for ass in ASSIGNMENTS:
@@ -713,6 +740,7 @@ def main(args=argv[1:], exitok=True):
             _, value = keyvalue.split(assignment, 1)
             key = firstpart(keyvalue, False)
 
+            # Change the file if possible, if not, add the key value
             if changefile(filename, key, value, dummyrun=True):
                 changefile(filename, key, value)
             else:
@@ -720,6 +748,23 @@ def main(args=argv[1:], exitok=True):
                     data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
+        elif args[0] in ["-d", "--define"]:
+            filename = args[1]
+            keyvalue = bs(args[2])
+
+            assignment = None
+            special = None
+            for ass in ASSIGNMENTS:
+                if ass in keyvalue:
+                    assignment = ass
+                    break
+            if not assignment:
+                sysexit(2)
+            _, value = keyvalue.split(assignment, 1)
+            key = firstpart(keyvalue, False)
+
+            # Change the #define value in the file
+            changefile(filename, key, value, define=True)
         else:
             # Single line replace ("x 123")
             filename = args[0]

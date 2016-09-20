@@ -43,6 +43,10 @@ start aurutils
 ../setconf.py aurutils pkgrel+=1
 complete aurutils
 
+start printk
+../setconf.py -d printk CONSOLE_LOGLEVEL_DEFAULT=4
+complete printk
+
 echo -n 'Testing nonexisting...'
 ../setconf.py nonexisting x+=1 >/dev/null 2> error.log
 grep Errno error.log \
