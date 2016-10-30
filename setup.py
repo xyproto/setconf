@@ -1,11 +1,11 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import sys
 
 from setuptools import setup
 
 setup(name="setconf",
-      version="0.7.3",
+      version="0.7.4",
       description="Change configuration settings in text files",
       url="http://setconf.roboticoverlords.org/",
       author="Alexander F Rødseth",
