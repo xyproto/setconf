@@ -22,5 +22,6 @@ setup(name="setconf",
           "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
           "Programming Language :: Python",
           "Topic :: System :: Shells",
+          "Topic :: Utilities",
       ]
 )
