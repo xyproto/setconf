@@ -44,6 +44,7 @@ def bs(x):
         return x.encode("utf-8")
     return x
 
+
 NL = bs(linesep_str)
 ASSIGNMENTS = [b'==', b'=>', b'+=', b'-=', b'?=',
                b'=', b':=', b'::', b':']
@@ -96,10 +97,6 @@ def parts(line, including_assignment=True):
 
 def firstpart(line, including_assignment=True):
     return parts(line, including_assignment)[0]
-
-
-def secondpart(line, including_assignment=True):
-    return parts(line, including_assignment)[1]
 
 
 def changeline(line, newvalue):
@@ -197,6 +194,7 @@ tea := yes
     print("Change passes: %s" % (passes))
     return passes
 
+
 def test_change_define():
     passes = True
 
@@ -212,6 +210,7 @@ def test_change_define():
 
     print("Change define passes: %s" % (passes))
     return passes
+
 
 def changefile(filename, key, value, dummyrun=False, define=False):
     """if dummyrun==True, don't write but return True if changes would have been made"""
@@ -659,7 +658,7 @@ def dec(startvalue, s):
     return strip_trailing_zeros(result)
 
 
-def main(args=argv[1:], exitok=True):
+def main(args=argv[1:]):
     if len(args) == 1:
         if args[0] in ["-t", "--test"]:
             tests()
@@ -730,7 +729,6 @@ def main(args=argv[1:], exitok=True):
             create_if_missing(filename)
 
             assignment = None
-            special = None
             for ass in ASSIGNMENTS:
                 if ass in keyvalue:
                     assignment = ass
@@ -753,7 +751,6 @@ def main(args=argv[1:], exitok=True):
             keyvalue = bs(args[2])
 
             assignment = None
-            special = None
             for ass in ASSIGNMENTS:
                 if ass in keyvalue:
                     assignment = ass
@@ -797,6 +794,7 @@ def main(args=argv[1:], exitok=True):
             changefile_multiline(filename, key, value, endstring)
     else:
         sysexit(1)
+
 
 if __name__ == "__main__":
     main()
