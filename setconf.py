@@ -917,6 +917,13 @@ def main(args=argv[1:]):
                     data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
+        elif args[0] in ["-u", "--uncomment"]:
+            filename = args[1]
+            key = bs(args[2])
+            value = bs(args[3])
+
+            # Uncomment the key in the file, then try to set the value
+            changefile(filename, key, value, uncomment_first=True)
         else:
             # Multiline replace
             filename = args[0]

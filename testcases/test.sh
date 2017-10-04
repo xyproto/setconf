@@ -51,6 +51,10 @@ start kernel_config
 ../setconf.py -u kernel_config CONFIG_ULTRIX_PARTITION=y
 complete kernel_config
 
+start small
+../setconf.py -u small f 42
+complete small
+
 echo -n 'Testing nonexisting...'
 ../setconf.py nonexisting x+=1 >/dev/null 2> error.log
 grep Errno error.log \

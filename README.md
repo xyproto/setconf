@@ -17,7 +17,9 @@ Compile time features
 
 TODO
 ----
-* A way to change only the n'th occurence of a configuration option
+
+* Better way to handle arguments, without adding an external dependency.
+* A way to change only the n'th occurence of a configuration option.
 * Flag for commenting out a key (adding "# ") or changing a key while keeping it commented out.
 * An option for removing the configuration value instead of using `''`.
 * Rewrite in a compiled language?
