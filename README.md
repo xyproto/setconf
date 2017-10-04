@@ -17,18 +17,22 @@ Compile time features
 
 TODO
 ----
-* `-u` option for uncommenting a key while setting the value (removing `# `). Should uncomment by default?
-* `-c` option for commenting out a key (adding "# ") or changing a key while keeping it as commented out.
 * A way to change only the n'th occurence of a configuration option
-* Add support for changing values of `#define` and `(setq` as well?
-* Rewrite in a compiled language?
+* Flag for commenting out a key (adding "# ") or changing a key while keeping it commented out.
 * An option for removing the configuration value instead of using `''`.
+* Rewrite in a compiled language?
 * Optimize the code that is used for adding options with `-a`.
 * A way to add an option with `-a` after a given string occurs.
 * An option for removing both the key and the value.
 * Test and fix the combination of `-a` and multiline markers.
 * Fix the behavior when `"` is the multiline marker and `:` the delimiter (the [yml](https://fdik.org/yml/) format).
 * Refactor
+
+Changes from 0.7.4 to 0.7.5
+---------------------------
+
+* Can now uncomment configuration options with the `-u` flag.
+* Uncommenting and setting values also works on Linux kernel configuration (`#CONFIG_KERNEL_XY is not set` to `CONFIG_KERNEL_XY=y`).
 
 Changes from 0.7.3 to 0.7.4
 ---------------------------

@@ -23,6 +23,7 @@
 # Mar 2015
 # Jun 2015
 # Mar 2016
+# Oct 2017
 #
 
 from sys import argv
@@ -33,7 +34,7 @@ from tempfile import mkstemp
 from decimal import Decimal
 from base64 import b64decode
 
-VERSION = "0.7.4"
+VERSION = "0.7.5"
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
@@ -47,7 +48,9 @@ def bs(x):
 
 NL = bs(linesep_str)
 ASSIGNMENTS = [b'==', b'=>', b'+=', b'-=', b'?=',
-               b'=', b':=', b'::', b':']
+               b'=', b':=', b'::', b':', b'is']
+SINGLE_LINE_COMMENTS = [b"#", b"//", b"--"]
+MULTI_LINE_COMMENTS = [b"/*"]
 
 
 def parts(line, including_assignment=True):
@@ -57,7 +60,7 @@ def parts(line, including_assignment=True):
     if not stripline:
         return None, None
     # Skip lines that start with #, // or /*
-    for commentsymbol in [b"#", b"//", b"/*"]:
+    for commentsymbol in SINGLE_LINE_COMMENTS + MULTI_LINE_COMMENTS:
         if stripline.startswith(commentsymbol):
             # Skip this line
             return None, None
@@ -110,6 +113,10 @@ def changeline(line, newvalue):
         elif b"=\t" in line or b":\t" in line or b">\t" in line:
             return first + b"\t" + newvalue
         else:
+            # Special case for Linux kernel configuration files
+            if first.endswith(b" is"):
+                # Use "=" instead of "is" when setting a config value to "=y" for instance
+                first = first[:-3] + b"="
             return first + newvalue
     else:
         return line
@@ -139,6 +146,56 @@ def test_changeline():
     passes = passes and changeline("   /* ost = 2 */", "3") == b"   /* ost = 2 */"
     passes = passes and changeline("æøå =>\t123", "256") == bs("æøå =>\t256")
     print("Changeline passes: %s" % (passes))
+    return passes
+
+
+def uncomment(lines, key):
+    """Given a list of lines and a key, uncomment lines starting with a single line comment."""
+    key = bs(key)
+
+    newlines = []
+    for line in lines:
+        if not line.strip():
+            newlines.append(line)
+            continue
+        else:
+            stripped = line.strip()
+            comment_markers = SINGLE_LINE_COMMENTS
+            # Strip away comment marker + space if possible, if not, just strip away the comment marker
+            for comment_marker in [x + b" " for x in comment_markers] + comment_markers:
+                if stripped.startswith(comment_marker):
+                    # Use the line, with the comment stripped away
+                    commentpos = line.find(comment_marker)
+                    after_comment_marker = line[commentpos + len(comment_marker):]
+                    stripped_contents = after_comment_marker.strip()
+                    if stripped_contents.startswith(key):
+                        newlines.append(line[:commentpos] + after_comment_marker)
+                        break
+            else:
+                # No uncommenting, the regular case
+                newlines.append(line)
+    return newlines
+
+
+def test_uncomment():
+    testcontent = b"""y = 1
+// x = 42
+  #CONFIG_EVERYTHING=y
+z := 9
+"""
+    testcontent_changed = b"""y = 1
+// x = 42
+  CONFIG_EVERYTHING="ABSOLUTELY NOT"
+z := 9
+"""
+    passes = True
+    splitted = testcontent.split(NL)
+    splitted = uncomment(splitted, "CONFIG_EVERYTHING")
+    elements = change(splitted, "CONFIG_EVERYTHING", "\"ABSOLUTELY NOT\"")
+    a = bytes.join(b"", elements)
+    b = bytes.join(b"", testcontent_changed.split(NL))
+    passes = passes and a == b
+    print("Uncomment passes: %s" % (passes))
     return passes
 
 
@@ -212,7 +269,7 @@ def test_change_define():
     return passes
 
 
-def changefile(filename, key, value, dummyrun=False, define=False):
+def changefile(filename, key, value, dummyrun=False, define=False, uncomment_first=False):
     """if dummyrun==True, don't write but return True if changes would have been made"""
 
     key = bs(key)
@@ -233,7 +290,10 @@ def changefile(filename, key, value, dummyrun=False, define=False):
     elif not data.endswith(NL):
         final_nl = False
     # Change and write the file
-    changed_contents = NL.join(change(lines, key, value, define=define))
+    if uncomment_first:
+        changed_contents = NL.join(change(uncomment(lines, key), key, value, define=define))
+    else:
+        changed_contents = NL.join(change(lines, key, value, define=define))
     # Only add a final newline if the original contents had one at the end
     if final_nl:
         changed_contents += NL
@@ -294,6 +354,59 @@ def test_changefile():
     passes = True
     passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
     print("Changefile passes: %s" % (passes))
+    return passes
+
+
+def test_changefile_uncomment():
+    # Test data
+    testcontent = b"""#   y = 1
+// x = 42
+  #DESTROY_EVERYTHING=y
+# z  :=  123
+"""
+    testcontent_changed = b"""  y = 2
+x = 9000
+  #DESTROY_EVERYTHING=y
+z  := 7
+"""
+    filename = mkstemp()[1]
+    # Write the testfile
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
+    # Change the file with changefile
+    changefile(filename, "x", "9000", uncomment_first=True)
+    changefile(filename, "DESTROY_EVERYTHING", "!IGNORED!", uncomment_first=False)
+    changefile(filename, "z", "7", uncomment_first=True)
+    changefile(filename, "y", "2", uncomment_first=True)
+    # Read the file
+    with open(filename, 'rb') as f:
+        newcontent = f.read().split(NL)[:-1]
+    # Do the tests
+    passes = True
+    passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
+    print("Changefile and uncomment passes: %s" % (passes))
+    return passes
+
+
+def test_changefile_uncomment_kernel():
+    # Test data
+    testcontent = b"""# CONFIG_KERNEL_XZ is not set
+"""
+    testcontent_changed = b"""CONFIG_KERNEL_XZ=y
+"""
+    filename = mkstemp()[1]
+    # Write the testfile
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
+    # Change the file with changefile
+    changefile(filename, "CONFIG_KERNEL_XZ", "y", uncomment_first=True)
+    # Read the file
+    with open(filename, 'rb') as f:
+        newcontent = f.read().split(NL)[:-1]
+    # Do the tests
+    passes = True
+    passes = passes and newcontent == testcontent_changed.split(NL)[:-1]
+    print("Changefile kernel config passes: %s" % (passes))
     return passes
 
 
@@ -583,6 +696,9 @@ def tests():
     passes = passes and test_changefile_multiline()
     passes = passes and test_addline()
     passes = passes and test_latin1()
+    passes = passes and test_uncomment()
+    passes = passes and test_changefile_uncomment()
+    passes = passes and test_changefile_uncomment_kernel()
     if passes:
         print("All tests pass!")
     else:
@@ -677,7 +793,7 @@ def main(args=argv[1:]):
             print("\t-a or --add\t\tadd the option if it doesn't exist")
             print("\t\t\t\tcreates the file if needed")
             print("\t-d or --define\t\tset a #define")
-            #print("\t-r or --remove\t\tremove the option if it exist")
+            print("\t-u or --uncomment\t\tuncomment the line first")
             print("")
             print("Examples:")
             print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
@@ -687,7 +803,7 @@ def main(args=argv[1:]):
             print("\tsetconf app.py NUMS \"[1, 2, 3]\" ']'")
             print("\tsetconf -a server.conf ABC 123")
             print("\tsetconf -d linux/printk.h CONSOLE_LOGLEVEL_DEFAULT=4")
-            #print("\tsetconf -r server.conf ABC")
+            print("\tsetconf -u kernel_config CONFIG_MAGIC_SYSRQ=y")
             print("")
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
@@ -762,6 +878,22 @@ def main(args=argv[1:]):
 
             # Change the #define value in the file
             changefile(filename, key, value, define=True)
+        elif args[0] in ["-u", "--uncomment"]:
+            filename = args[1]
+            keyvalue = bs(args[2])
+
+            assignment = None
+            for ass in ASSIGNMENTS:
+                if ass in keyvalue:
+                    assignment = ass
+                    break
+            if not assignment:
+                sysexit(2)
+            _, value = keyvalue.split(assignment, 1)
+            key = firstpart(keyvalue, False)
+
+            # Uncomment the key in the file, then try to set the value
+            changefile(filename, key, value, uncomment_first=True)
         else:
             # Single line replace ("x 123")
             filename = args[0]

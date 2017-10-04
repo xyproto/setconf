@@ -47,6 +47,10 @@ start printk
 ../setconf.py -d printk CONSOLE_LOGLEVEL_DEFAULT=4
 complete printk
 
+start kernel_config
+../setconf.py -u kernel_config CONFIG_ULTRIX_PARTITION=y
+complete kernel_config
+
 echo -n 'Testing nonexisting...'
 ../setconf.py nonexisting x+=1 >/dev/null 2> error.log
 grep Errno error.log \
