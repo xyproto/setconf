@@ -18,17 +18,18 @@ Compile time features
 TODO
 ----
 
-* Better way to handle arguments, without adding an external dependency.
-* A way to change only the n'th occurence of a configuration option.
-* Flag for commenting out a key (adding "# ") or changing a key while keeping it commented out.
-* An option for removing the configuration value instead of using `''`.
+* A flag for changing the n'th occurence.
+* A cleaner way to handle arguments, without adding an external dependency.
+* A flag for commenting out keys (adding "# ")
+* A flag for removing a value instead of using `''`.
+* A flag for removing both the key and the value.
 * Rewrite in a compiled language?
 * Optimize the code that is used for adding options with `-a`.
 * A way to add an option with `-a` after a given string occurs.
-* An option for removing both the key and the value.
 * Test and fix the combination of `-a` and multiline markers.
 * Fix the behavior when `"` is the multiline marker and `:` the delimiter (the [yml](https://fdik.org/yml/) format).
-* Refactor
+* Document which assignment symbols and comment markers are supported.
+* Refactor.
 
 Changes from 0.7.4 to 0.7.5
 ---------------------------
