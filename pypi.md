@@ -1,10 +1,15 @@
 # Uploading to Pypi
 
-## Commands
+## The old deprecated way
 
     sudo pacman -S python-pip python-setuptools python-wheel python-twine --needed
     python setup.py sdist bdist_wheel
 
-## Documentation
+Have a good `~/.pypirc` file, before uploading to the server, then be prepared to pgp sign and:
 
-* [Sharing your labor of love](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
+    twine upload --sign dist/setconf-0.7.5*
+
+# Upload to pypi
+
+    python setup.py sdist upload -r pypi
+
