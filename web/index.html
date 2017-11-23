@@ -1,211 +1,247 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type" /><title>setconf</title>
-<meta content="Alexander F Rødseth" name="author" />
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>setconf</title>
+  <meta content="Alexander F Rødseth" name="author" />
+  <style>
+    .sans-serif {
+      font-family: Helvetica, Arial, sans-serif;
+    }
+    .monospace {
+      font-family: Courier New, Courier, monospace;
+    }
+    .sans-serif-bold {
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: bold;
+    }
+    .monospace-bold {
+      font-family: Courier New, Courier, monospace;
+      font-weight: bold;
+    }
+    body {
+      direction: ltr;
+      background-color: rgb(249, 255, 249);
+      color: black;
+    }
+  </style>
 </head>
-<body style="direction: ltr; background-color: rgb(249, 255, 249); color: rgb(0, 0, 0);" alink="red" link="#ff6600" vlink="#993300" background="subtle.png">
+<body alink="red" link="#ff6600" vlink="#993300" background="subtle.png">
   <img src="setconflogo.png" style="width: 170px; height: 170px; float: right; margin-top: 2em; margin-right: 4em;" />
-<div style="margin-left: 40px;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"></span></big></big>
-<big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"></span></big></big></div>
-<div style="color: white; margin-left: 4em;"><big style="font-weight: bold;"><big><span style="font-family: Helvetica,Arial,sans-serif;"><br />
-    <big style="color: rgb(51, 51, 51); font-size: 2em;"><big>setconf</big></big></span></big></big><br />
-<br />
-<br />
-</div>
-<div style="margin-left: 40px;">
-<br /></div>
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">What
-is it?</span>
-</div>
-<div style="margin-left: 200px;"><br />
-setconf is a small
-utility that can be used for changing settings in configuration textfiles.<br />
-<br />
-<br />
-</div>
-<div style="margin-left: 120px; background-color: white; color: black;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">What
-can it do?</span>
-</div>
-<div style="margin-left: 200px;"><br />
-If there's a textfile
-with
-fields like these:<br />
-<br />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">&nbsp;&nbsp;&nbsp;
-CC=abc</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">&nbsp;&nbsp;&nbsp;
-lights := on</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">&nbsp;&nbsp;&nbsp;
-compile_today: true</span><br />
-<br />
-setconf can change the values to something else. It will take the first
-key it finds and change the value.<br />
-<br />
-setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
-<br />
-<br />
-<br />
-</div>
-<div style="margin-left: 120px; color: white; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; color: black;"><span style="font-weight: bold;">Example</span></span><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;"></span>
-</div>
-<div style="margin-left: 200px;"><br />
-You are writing a PKGBUILD
-for Arch and wish to change a setting without using sed.<br />
-Let's say you want to change CC from abc to gcc and that "CC=gcc make"
-doesn't cut it, for some reason.<br />
-<br />
-Then you can use the following command:<br /><br />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-setconf Makefile CC gcc</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
-<br />
-<br />
-</div>
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Why?</span>
-</div>
-<div style="margin-left: 200px;">
-<ul>
-<li>It aims to solve a tiny problem properly instead of a
-thousand problems halfway, in true UNIX-spirit.</li>
-<li>It can be used with a command that is very easy to read, as opposed to using sed for the same task.</li>
-<li>There is less redundancy:</li>
-<ul>
-<li>They key does not have to be specified twice.</li>
-<li>They old value does not have to be specified.</li>
-</ul>
-<li>It should be clear from the syntax what is being done.</li>
-<li>It's only one small executable, not a big package.</li>
-<li>It can add options and files if they are missing, by using <span style="font-family: Courier New,Courier,monospace;">--add</span>.</li>
-</ul>
-<br />
-</div>
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Syntax comparison</span>
-</div>
-<div style="margin-left: 200px;">
-<br />
-Setting a value:<br /><br />
-<div style="margin-left: 42px;">
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-  sed -i filename 's/key=oldvalue/key=value/g'</br>
-</span>
-<br />
-vs</br>
-<br />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-  setconf filename key value</br>
-</span>
-<br />
-</div>
-</div>
-<br />
-<div style="margin-left: 200px;">
-<br />
-Setting a value, adding the key and value if missing and creating the file if missing:<br /><br />
-<div style="margin-left: 42px;">
-    <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-        grep -q 'x=' file 2&gt/dev/null &amp;&amp; sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
-    </span>
-    <br />
-    vs</br>
-    <br />
-        <span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-            setconf -a file x=7</br>
+  <div style="margin-left: 4em;">
+    <big style="font-weight: bold;">
+      <big>
+        <span class=sans-serif>
+          <br/>
+          <big style="color: rgb(51, 51, 51); font-size: 2em;">
+            <big>setconf</big>
+          </big>
         </span>
+      </big>
+    </big>
+    <br/>
+    <br/>
+    <br/>
+  </div>
+  <div style="margin-left: 40px;">
+    <br/>
+  </div>
+  <div style="margin-left: 120px; background-color: white;">
+    <span class=sans-serif-bold>What is it?</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <br/>
+    setconf is a small utility that can be used for changing settings in configuration textfiles.
+    <br/>
+    <br/>
+    <br/>
+  </div>
+  <div style="margin-left: 120px; background-color: white;">
+    <span class=sans-serif-bold>
+      What can it do?
+    </span>
+  </div>
+  <div style="margin-left: 200px;"><br/>
+    If there's a textfile with fields like these:
+    <br/>
+    <br/>
+    <span class=monospace-bold>&nbsp;&nbsp;&nbsp;CC=abc</span><br class=monospace-bold />
+    <span class=monospace-bold>&nbsp;&nbsp;&nbsp;lights := on</span><br class=monospace-bold />
+    <span class=monospace-bold>&nbsp;&nbsp;&nbsp;compile_today: true</span><br/>
+    <br/>
+    setconf can change the values to something else. It will take the first
+    key it finds and change the value.<br/>
+    <br/>
+    setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
+    <br/>
+    <br/>
+    <br/>
+  </div>
+  <div style="margin-left: 120px; background-color: white;">
+    <span class=sans-serif-bold>Example</span>
+    <span class=sans-serif-bold></span>
+  </div>
+  <div style="margin-left: 200px;"><br/>
+    You are writing a PKGBUILD
+    for Arch and wish to change a setting without using sed.<br/>
+    Let's say you want to change CC from abc to gcc and that "CC=gcc make"
+    doesn't cut it, for some reason.<br/>
+    <br/>
+    Then you can use the following command:<br/><br/>
+    <span class=monospace-bold>
+      setconf Makefile CC gcc</span><br class=monospace-bold />
+    <br/>
+    <br/>
+  </div>
+  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Why?</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <ul>
+      <li>It aims to solve a tiny problem properly instead of a
+        thousand problems halfway, in true UNIX-spirit.</li>
+      <li>It can be used with a command that is very easy to read, as opposed to using sed for the same task.</li>
+      <li>There is less redundancy:</li>
+      <ul>
+        <li>They key does not have to be specified twice.</li>
+        <li>They old value does not have to be specified.</li>
+      </ul>
+      <li>It should be clear from the syntax what is being done.</li>
+      <li>It's only one small executable, not a big package.</li>
+      <li>It can add options and files if they are missing, by using <span class=monospace>--add</span>.</li>
+    </ul>
+    <br/>
+  </div>
+  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Syntax comparison</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <br/>
+    Setting a value:<br/><br/>
+    <div style="margin-left: 42px;">
+      <span class=monospace-bold>
+        sed -i filename 's/key=oldvalue/key=value/g'</br>
+      </span>
+      <br/>
+      vs</br>
+      <br/>
+      <span class=monospace-bold>
+        setconf filename key value</br>
+      </span>
+      <br/>
     </div>
-    <br />
-    <br />
-    Note that the example using sed will not handle variations in whitespace or in choice of assignment symbol.<br />
-setconf supports
-    <span style="font-family: Courier New,Courier,monospace;">==</span>,
-    <span style="font-family: Courier New,Courier,monospace;">=&gt;</span>,
-    <span style="font-family: Courier New,Courier,monospace;">=</span>,
-    <span style="font-family: Courier New,Courier,monospace;">:=</span>,
-    <span style="font-family: Courier New,Courier,monospace;">::</span>
-    and <span style="font-family: Courier New,Courier,monospace;">:</span>. Also note that the old value may have to be provided if performing replacements with sed.</br>
-    <br />
-    <br />
-</div>
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Which arguments are supported?</span>
-</div>
-<div style="margin-left: 200px;">
-    <br />
-    setconf ordinarily takes a filename, key and a new value for that key.<br />
-    One can also give an optional end string, for replacing multiline values.<br />
-    It's also possible to add lines with <span style="font-family: Courier New, Courier, monospace;">-a</span> or <span style="font-family: Courier New, Courier, monospace;">--add</span>.<br />
-    <br />
-    See the man page or <span style="font-family: Courier New, Courier, monospace;">--help</span> output for more information.
-    <br />
-    <br />
-    <br />
-</div>
+  </div>
+  <br/>
+  <div style="margin-left: 200px;">
+    <br/>
+    Setting a value, adding the key and value if missing and creating the file if missing:<br/><br/>
+    <div style="margin-left: 42px;">
+      <span class=monospace-bold>
+        grep -q 'x=' file 2&gt;/dev/null &amp;&amp; sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
+      </span>
+      <br/>
+      vs</br>
+      <br/>
+      <span class=monospace-bold>
+        setconf -a file x=7</br>
+      </span>
+    </div>
+    <br/>
+    <br/>
+    Note that the example using sed will not handle variations in whitespace or in choice of assignment symbol.<br/>
+    setconf supports
+    <span class=monospace>==</span>,
+    <span class=monospace>=&gt;</span>,
+    <span class=monospace>=</span>,
+    <span class=monospace>:=</span>,
+    <span class=monospace>::</span>
+    and <span class=monospace>:</span>. Also note that the old value may have to be provided if performing replacements with sed.</br>
+    <br/>
+    <br/>
+  </div>
+  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Which arguments are supported?</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <br/>
+    setconf ordinarily takes a filename, key and a new value for that key.<br/>
+    One can also give an optional end string, for replacing multiline values.<br/>
+    It's also possible to add lines with <span class=monospace>-a</span> or <span class=monospace>--add</span>.<br/>
+    <br/>
+    See the man page or <span class=monospace>--help</span> output for more information.
+    <br/>
+    <br/>
+    <br/>
+  </div>
 
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Source code and bug tracker</span>
-</div>
-<div style="margin-left: 200px;">
-    <br />
-    The source and issue tracker is available at <a href="https://github.com/xyproto/setconf">github</a>.<br />
-    <br />
-<span style="font-family: Courier New,Courier,monospace; font-weight: bold;">
-    git clone git://github.com/xyproto/setconf.git</span><br style="font-family: Courier New,Courier,monospace; font-weight: bold;" />
-    <br />
-    <br />
-</div>
+  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Source code and bug tracker</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <br/>
+    The source and issue tracker is available at <a href="https://github.com/xyproto/setconf">github</a>.<br/>
+    <br/>
+    <span class=monospace-bold>
+      git clone git://github.com/xyproto/setconf.git</span><br class=monospace-bold />
+    <br/>
+    <br/>
+  </div>
 
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Installation</span>
-</div>
-<div style="margin-left: 200px;">
-    <br />
+  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Installation</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <br/>
 
-    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Arch Linux</div>
+    <div class=sans-serif-bold>Arch Linux</div>
     <p style="margin-left: 42px;">
-    <span style="font-family: Courier New, Courier, monospace;">pacman -S setconf</span><br /><br/>
-    See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br />
+    <span class=monospace>pacman -S setconf</span><br/><br/>
+    See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br/>
     </p>
 
-    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">NetBSD</div>
+    <div class=sans-serif-bold>NetBSD</div>
     <p style="margin-left: 42px;">
-    <span style="font-family: Courier New, Courier, monospace;">pkgin install py27-setconf</span><br /><br/>
-    Or from sources:<br /><br />
-    <span style="font-family: Courier New, Courier, monospace;">cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br /><br />
+    <span class=monospace>pkgin install py27-setconf</span><br/><br/>
+    Or from sources:<br/><br/>
+    <span class=monospace>cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br/><br/>
     </p>
 
-    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Gentoo</div>
+    <div class=sans-serif-bold>Gentoo</div>
     <p style="margin-left: 42px;">
-    <span style="font-family: Courier New, Courier, monospace;">emerge -av setconf</span><br /><br/>
+    <span class=monospace>emerge -av setconf</span><br/><br/>
     </p>
 
-    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">openSUSE</div>
+    <div class=sans-serif-bold>openSUSE</div>
     <p style="margin-left: 42px;">
-    <span style="font-family: Courier New, Courier, monospace;">zypper install setconf</span><br /><br/>
+    <span class=monospace>zypper install setconf</span><br/><br/>
     </p>
 
-    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Void Linux</div>
+    <div class=sans-serif-bold>Void Linux</div>
     <p style="margin-left: 42px;">
-    <span style="font-family: Courier New, Courier, monospace;">xbps-install setconf</span><br />
+    <span class=monospace>xbps-install setconf</span><br/><br/>
     </p>
 
-    <div style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Manually</div>
+    <div class=sans-serif-bold>Manually</div>
+
     <p style="margin-left: 42px;">
-    It's recommended to install setconf with your distros package management system.<br />
-    <br />
-    Here is a quick, manual way of installing the latest version of setconf:<br />
+      It's recommended to install setconf with your distros package management system.<br/>
+      <br/>
+      Here is a quick, manual way of installing the latest version of setconf:<br/>
     </p>
     <pre>
-	curl -s http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz | tar JxC /tmp
-	sudo install -Dm755 /tmp/setconf-0.7.5/setconf.py /usr/bin/setconf
-	sudo install -Dm644 /tmp/setconf-0.7.5/setconf.1.gz /usr/share/man/man1/setconf.1.gz
+      curl -s http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz | tar JxC /tmp
+      sudo install -Dm755 /tmp/setconf-0.7.5/setconf.py /usr/bin/setconf
+      sudo install -Dm644 /tmp/setconf-0.7.5/setconf.1.gz /usr/share/man/man1/setconf.1.gz
     </pre>
     <p style="margin-left: 42px;">
-    Run the two last commands as root instead of with sudo, if you prefer.<br/>
+    Run the two last commands as root instead of with sudo, if you prefer.
+    <br/>
     </p>
-    <br />
-</div>
+    <br/>
+  </div>
 
-<div style="margin-left: 120px; color: black; background-color: white;"><span style="font-family: Helvetica,Arial,sans-serif; font-weight: bold;">Downloads</span>
-</div>
-<div style="margin-left: 200px;">
-    <br />
-    Download the <a href="http://nuitka.net/">Nuitka</a>-compatible source for <a href="http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz">setconf 0.7.5</a><br />
-</div>
+  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Downloads</span>
+  </div>
+  <div style="margin-left: 200px;">
+    <br/>
+    Download the <a href="http://nuitka.net/">Nuitka</a>-compatible source for <a href="http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz">setconf 0.7.5</a><br/>
+    </div>
 
-<div style="text-align: right;"><span style="font-size: 0.8em">Alexander F Rødseth 2017</span></div>
-</body></html>
+    <div style="text-align: right;"><span style="font-size: 0.8em">Alexander F Rødseth 2017</span></div>
+  </body>
+</html>
