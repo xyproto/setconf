@@ -31,6 +31,7 @@
       direction: ltr;
       background-color: rgb(249, 255, 249);
       background-image: url("subtle.png");
+      margin-right: 2em;
       /* to detect style problems */
       color: #ff2080;
       font-family: "Comic Sans MS", "Comic Sans", cursive;
@@ -62,20 +63,21 @@
       margin-bottom: 0.8em;
     }
     .bar {
-      margin-left: 7.5em;
-      /*margin-left: 10vw;*/
+      /*margin-left: 7.5em;*/
+      margin-left: 10vw;
       background-color: white;
       margin-top: 2em;
       margin-bottom: 1.3em;
     }
     .text {
-      margin-left: 12.5em;
-      /*margin-left: 19vw;*/
+      /*margin-left: 12.5em;*/
+      margin-left: 19vw;
       margin-top: 1em;
       margin-bottom: 2.5em;
     }
     .list {
-      margin-left: 10em;
+      /*margin-left: 10em;*/
+      margin-left: 17vw;
       margin-top: 1em;
       margin-bottom: 2.5em;
     }
@@ -85,6 +87,11 @@
     }
     ul {
       list-style: none;
+    }
+    li {
+      list-style-position: inside;
+      text-indent: -1em;
+      padding-left: 1em;
     }
     li:before {
       content: "★";
