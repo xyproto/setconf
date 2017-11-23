@@ -24,6 +24,7 @@
 # Jun 2015
 # Mar 2016
 # Oct 2017
+# Nov 2017
 #
 
 from sys import argv
@@ -793,7 +794,7 @@ def main(args=argv[1:]):
             print("\t-a or --add\t\tadd the option if it doesn't exist")
             print("\t\t\t\tcreates the file if needed")
             print("\t-d or --define\t\tset a #define")
-            print("\t-u or --uncomment\t\tuncomment the line first")
+            print("\t-u or --uncomment\tuncomment the line first")
             print("")
             print("Examples:")
             print("\tsetconf Makefile.defaults NETSURF_USE_HARU_PDF NO")
