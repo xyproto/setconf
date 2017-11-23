@@ -1,0 +1,3 @@
+#ifndef SFTPSERVER_PATH
+#define SFTPSERVER_PATH "/usr/libexec/sftp-server"
+#endif
