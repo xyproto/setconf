@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
   <title>setconf</title>
@@ -95,13 +95,13 @@
   </div>
   <div style="margin-left: 200px;">
     <p>
-      You are writing a PKGBUILD for Arch and wish to change a setting without using sed.</br>
+      You are writing a PKGBUILD for Arch and wish to change a setting without using sed.<br/>
       Let's say you want to change CC from abc to gcc and that "CC=gcc make" doesn't cut it, for some reason.
     </p>
     <p>
       Then you can use the following command:
-      <pre class="oneliner">setconf Makefile CC gcc</pre>
     </p>
+    <pre class="oneliner">setconf Makefile CC gcc</pre>
   </div>
   <div class="bar">Why?</div>
   <div class="text">
@@ -124,25 +124,25 @@
   <div class="text">
     <p>
       Setting a value:
-      <pre style="margin-left: -2.5em; margin-bottom: -1em;">
-        sed -i filename 's/key=oldvalue/key=value/g'</br>
-      </pre>
-      <span style="margin-left: 2.5em;">vs</span>
-      <pre style="margin-left: -2.5em;">
-        setconf filename key value
-      </pre>
     </p>
+    <pre style="margin-left: -2.5em; margin-bottom: -1em;">
+      sed -i filename 's/key=oldvalue/key=value/g'<br/>
+    </pre>
+    <span style="margin-left: 2.5em;">vs</span>
+    <pre style="margin-left: -2.5em;">
+      setconf filename key value
+    </pre>
     <p>
       Setting a value, adding the key and value if missing and creating the file if missing:
-      <pre style="margin-left: -2.5em;">
-        grep -q 'x=' file 2&gt;/dev/null &amp;&amp; \
-          sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file
-      </pre>
-      <span style="margin-left: 2.5em;">vs</span>
-      <pre style="margin-left: -2.5em;">
-        setconf -a file x=7
-      </pre>
     </p>
+    <pre style="margin-left: -2.5em;">
+      grep -q 'x=' file 2&gt;/dev/null &amp;&amp; \
+        sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file
+    </pre>
+    <span style="margin-left: 2.5em;">vs</span>
+    <pre style="margin-left: -2.5em;">
+      setconf -a file x=7
+    </pre>
     <p>
       The old value may have to be provided when performing replacements with <i>sed</i>.
     </p>
