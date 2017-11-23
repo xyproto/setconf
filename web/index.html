@@ -7,23 +7,33 @@
   <style type="text/css">
     .sans-serif {
       font-family: Helvetica, Arial, sans-serif;
+      color: black;
     }
     .monospace {
       font-family: Courier New, Courier, monospace;
+      color: black;
     }
     .sans-serif-bold,#headline,.bar {
       font-family: Helvetica, Arial, sans-serif;
       font-weight: bold;
+      color: black;
     }
     .monospace-bold,pre {
       font-family: Courier New, Courier, monospace;
       font-weight: bold;
+      color: black;
+    }
+    .serif,.text,.list,.footer {
+      font-family: serif; /* may end up being sans-serif in browsers like Firefox */
+      color: black;
     }
     body {
       direction: ltr;
       background-color: rgb(249, 255, 249);
       background-image: url("subtle.png");
-      color: black;
+      /* to detect style problems */
+      color: #ff2080;
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
     }
     a {
       color: #ff6600;
@@ -49,22 +59,44 @@
       font-size: 3.7em;
       margin-left: 1.1em;
       margin-top: 0.7em;
-      margin-bottom: 0.4em;
+      margin-bottom: 0.8em;
     }
     .bar {
-      margin-left: 120px;
+      margin-left: 7.5em;
+      /*margin-left: 10vw;*/
       background-color: white;
       margin-top: 2em;
       margin-bottom: 1.3em;
     }
     .text {
-      margin-left: 200px;
+      margin-left: 12.5em;
+      /*margin-left: 19vw;*/
+      margin-top: 1em;
+      margin-bottom: 2.5em;
+    }
+    .list {
+      margin-left: 10em;
       margin-top: 1em;
       margin-bottom: 2.5em;
     }
     pre {
       margin-top: 1.5em;
       margin-bottom: 0.5em;
+    }
+    ul {
+      list-style: none;
+    }
+    li:before {
+      content: "★";
+      margin-right: 0.4em;
+      font-size: 0.8em;
+    }
+    .footer {
+      text-align: right;
+      font-size: 0.8em;
+    }
+    .subheader {
+      margin-left: 3em; /*42px;*/:w
     }
   </style>
 </head>
@@ -90,10 +122,8 @@
       setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
     </p>
   </div>
-  <div class="bar">
-    Example
-  </div>
-  <div style="margin-left: 200px;">
+  <div class="bar">Example</div>
+  <div class="text">
     <p>
       You are writing a PKGBUILD for Arch and wish to change a setting without using sed.<br/>
       Let's say you want to change CC from abc to gcc and that "CC=gcc make" doesn't cut it, for some reason.
@@ -104,7 +134,7 @@
     <pre class="oneliner">setconf Makefile CC gcc</pre>
   </div>
   <div class="bar">Why?</div>
-  <div class="text">
+  <div class="list">
     <ul>
       <li>It aims to solve a tiny problem properly instead of a
         thousand problems halfway, in true UNIX-spirit.</li>
@@ -175,36 +205,36 @@
   <div class="bar">Installation</div>
   <div class="text">
     <div class="sans-serif-bold">Arch Linux</div>
-    <p style="margin-left: 42px;">
-    <span class="monospace">pacman -S setconf</span><br/><br/>
-    See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br/>
+    <p class="subheader">
+      <span class="monospace-bold">pacman -S setconf</span><br/><br/>
+      See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br/>
     </p>
 
     <div class="sans-serif-bold">NetBSD</div>
-    <p style="margin-left: 42px;">
-    <span class="monospace">pkgin install py27-setconf</span><br/><br/>
-    Or from sources:<br/><br/>
-    <span class="monospace">cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br/><br/>
+    <p class="subheader">
+      <span class="monospace-bold">pkgin install py27-setconf</span><br/><br/>
+      Or from sources:<br/><br/>
+      <span class="monospace-bold">cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br/><br/>
     </p>
 
     <div class="sans-serif-bold">Gentoo</div>
-    <p style="margin-left: 42px;">
-    <span class="monospace">emerge -av setconf</span><br/><br/>
+    <p class="subheader">
+      <span class="monospace-bold">emerge -av setconf</span><br/><br/>
     </p>
 
     <div class="sans-serif-bold">openSUSE</div>
-    <p style="margin-left: 42px;">
-    <span class="monospace">zypper install setconf</span><br/><br/>
+    <p class="subheader">
+      <span class="monospace-bold">zypper install setconf</span><br/><br/>
     </p>
 
     <div class="sans-serif-bold">Void Linux</div>
-    <p style="margin-left: 42px;">
-    <span class="monospace">xbps-install setconf</span><br/><br/>
+    <p class="subheader">
+      <span class="monospace-bold">xbps-install setconf</span><br/><br/>
     </p>
 
     <div class="sans-serif-bold">Manually</div>
 
-    <p style="margin-left: 42px;">
+    <p class="subheader">
       It's recommended to install setconf with your distros package management system.<br/>
       <br/>
       Here is a quick, manual way of installing the latest version of setconf:<br/>
@@ -214,20 +244,17 @@
       sudo install -Dm755 /tmp/setconf-0.7.5/setconf.py /usr/bin/setconf
       sudo install -Dm644 /tmp/setconf-0.7.5/setconf.1.gz /usr/share/man/man1/setconf.1.gz
     </pre>
-    <p style="margin-left: 42px;">
+    <p class="subheader">
     Run the two last commands as root instead of with sudo, if you prefer.
     <br/>
     </p>
     <br/>
   </div>
 
-  <div style="margin-left: 120px; background-color: white;"><span class="sans-serif-bold">Downloads</span>
-  </div>
-  <div style="margin-left: 200px;">
-    <br/>
-    Download the <a href="http://nuitka.net/">Nuitka</a>-compatible source for <a href="http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz">setconf 0.7.5</a><br/>
+    <div class="bar">Downloads</div>
+    <div class="text">
+      Download the <a href="http://nuitka.net/">Nuitka</a>-compatible source for <a href="http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz">setconf 0.7.5</a><br/>
     </div>
-
-    <div style="text-align: right;"><span style="font-size: 0.8em">Alexander F Rødseth 2017</span></div>
+    <div class="footer">Alexander F Rødseth 2017</div>
   </body>
 </html>
