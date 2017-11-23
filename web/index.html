@@ -11,11 +11,11 @@
     .monospace {
       font-family: Courier New, Courier, monospace;
     }
-    .sans-serif-bold {
+    .sans-serif-bold,#headline,.bar {
       font-family: Helvetica, Arial, sans-serif;
       font-weight: bold;
     }
-    .monospace-bold {
+    .monospace-bold,pre {
       font-family: Courier New, Courier, monospace;
       font-weight: bold;
     }
@@ -51,61 +51,60 @@
       margin-top: 0.7em;
       margin-bottom: 0.4em;
     }
+    .bar {
+      margin-left: 120px;
+      background-color: white;
+      margin-top: 2em;
+      margin-bottom: 1.3em;
+    }
+    .text {
+      margin-left: 200px;
+      margin-top: 1em;
+      margin-bottom: 2.5em;
+    }
+    pre {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
   </style>
 </head>
 <body>
-  <img src="setconflogo.png" id="logo" alt="setconf logo" />
-  <div class=sans-serif-bold id=headline>setconf</div>
-  <div class=sans-serif-bold style="margin-left: 120px; background-color: white; margin-top: 3.5em;">
-    What is it?
-  </div>
-  <div style="margin-left: 200px;">
-    <br/>
+  <div><img src="setconflogo.png" id="logo" alt="setconf logo"/></div>
+  <div id="headline">setconf</div>
+  <div class="bar">What is it?</div>
+  <div class="text">
     setconf is a small utility that can be used for changing settings in configuration textfiles.
-    <br/>
-    <br/>
-    <br/>
   </div>
-  <div style="margin-left: 120px; background-color: white;">
-    <span class=sans-serif-bold>
-      What can it do?
-    </span>
-  </div>
-  <div style="margin-left: 200px;"><br/>
+  <div class="bar">What can it do?</div>
+  <div class="text">
     If there's a textfile with fields like these:
-    <br/>
-    <br/>
-    <span class=monospace-bold>&nbsp;&nbsp;&nbsp;CC=abc</span><br class=monospace-bold />
-    <span class=monospace-bold>&nbsp;&nbsp;&nbsp;lights := on</span><br class=monospace-bold />
-    <span class=monospace-bold>&nbsp;&nbsp;&nbsp;compile_today: true</span><br/>
-    <br/>
-    setconf can change the values to something else. It will take the first
-    key it finds and change the value.<br/>
-    <br/>
-    setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
-    <br/>
-    <br/>
-    <br/>
+    <pre>
+    CC=abc
+    lights := on
+    compile_today: true
+    </pre>
+    <p>
+      setconf can change the values to something else. It will take the first key it finds and change the value.
+    </p>
+    <p>
+      setconf can also change values that span over multiple lines, by adding an end string as the last parameter. A typical end string would be ')' or ']'.
+    </p>
   </div>
-  <div style="margin-left: 120px; background-color: white;">
-    <span class=sans-serif-bold>Example</span>
-    <span class=sans-serif-bold></span>
-  </div>
-  <div style="margin-left: 200px;"><br/>
-    You are writing a PKGBUILD
-    for Arch and wish to change a setting without using sed.<br/>
-    Let's say you want to change CC from abc to gcc and that "CC=gcc make"
-    doesn't cut it, for some reason.<br/>
-    <br/>
-    Then you can use the following command:<br/><br/>
-    <span class=monospace-bold>
-      setconf Makefile CC gcc</span><br class=monospace-bold />
-    <br/>
-    <br/>
-  </div>
-  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Why?</span>
+  <div class="bar">
+    Example
   </div>
   <div style="margin-left: 200px;">
+    <p>
+      You are writing a PKGBUILD for Arch and wish to change a setting without using sed.</br>
+      Let's say you want to change CC from abc to gcc and that "CC=gcc make" doesn't cut it, for some reason.
+    </p>
+    <p>
+      Then you can use the following command:
+      <pre class="oneliner">setconf Makefile CC gcc</pre>
+    </p>
+  </div>
+  <div class="bar">Why?</div>
+  <div class="text">
     <ul>
       <li>It aims to solve a tiny problem properly instead of a
         thousand problems halfway, in true UNIX-spirit.</li>
@@ -117,116 +116,93 @@
       </ul>
       <li>It should be clear from the syntax what is being done.</li>
       <li>It's only one small executable, not a big package.</li>
-      <li>It can add options and files if they are missing, by using <span class=monospace>--add</span>.</li>
+      <li>It can add options and files if they are missing, by using <span class="monospace">--add</span>.</li>
     </ul>
     <br/>
   </div>
-  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Syntax comparison</span>
-  </div>
-  <div style="margin-left: 200px;">
-    <br/>
-    Setting a value:<br/><br/>
-    <div style="margin-left: 42px;">
-      <span class=monospace-bold>
+  <div class="bar">Syntax comparison</div>
+  <div class="text">
+    <p>
+      Setting a value:
+      <pre style="margin-left: -2.5em; margin-bottom: -1em;">
         sed -i filename 's/key=oldvalue/key=value/g'</br>
-      </span>
-      <br/>
-      vs</br>
-      <br/>
-      <span class=monospace-bold>
-        setconf filename key value</br>
-      </span>
-      <br/>
-    </div>
+      </pre>
+      <span style="margin-left: 2.5em;">vs</span>
+      <pre style="margin-left: -2.5em;">
+        setconf filename key value
+      </pre>
+    </p>
+    <p>
+      Setting a value, adding the key and value if missing and creating the file if missing:
+      <pre style="margin-left: -2.5em;">
+        grep -q 'x=' file 2&gt;/dev/null &amp;&amp; \
+          sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file
+      </pre>
+      <span style="margin-left: 2.5em;">vs</span>
+      <pre style="margin-left: -2.5em;">
+        setconf -a file x=7
+      </pre>
+    </p>
+    <p>
+      The old value may have to be provided when performing replacements with <i>sed</i>.
+    </p>
+    <p>
+      Also note that the example using sed will not handle variations in whitespace or in choice of assignment symbol.
+      <i>setconf</i> supports
+      <span class="monospace">==</span>,
+      <span class="monospace">=&gt;</span>,
+      <span class="monospace">=</span>,
+      <span class="monospace">:=</span>,
+      <span class="monospace">::</span>
+      and <span class="monospace">:</span>.
+    </p>
   </div>
-  <br/>
-  <div style="margin-left: 200px;">
-    <br/>
-    Setting a value, adding the key and value if missing and creating the file if missing:<br/><br/>
-    <div style="margin-left: 42px;">
-      <span class=monospace-bold>
-        grep -q 'x=' file 2&gt;/dev/null &amp;&amp; sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file</br>
-      </span>
-      <br/>
-      vs</br>
-      <br/>
-      <span class=monospace-bold>
-        setconf -a file x=7</br>
-      </span>
-    </div>
-    <br/>
-    <br/>
-    Note that the example using sed will not handle variations in whitespace or in choice of assignment symbol.<br/>
-    setconf supports
-    <span class=monospace>==</span>,
-    <span class=monospace>=&gt;</span>,
-    <span class=monospace>=</span>,
-    <span class=monospace>:=</span>,
-    <span class=monospace>::</span>
-    and <span class=monospace>:</span>. Also note that the old value may have to be provided if performing replacements with sed.</br>
-    <br/>
-    <br/>
-  </div>
-  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Which arguments are supported?</span>
-  </div>
-  <div style="margin-left: 200px;">
-    <br/>
+  <div class="bar">Which arguments are supported?</div>
+  <div class="text">
     setconf ordinarily takes a filename, key and a new value for that key.<br/>
     One can also give an optional end string, for replacing multiline values.<br/>
-    It's also possible to add lines with <span class=monospace>-a</span> or <span class=monospace>--add</span>.<br/>
+    It's also possible to add lines with <span class="monospace">-a</span> or <span class="monospace">--add</span>.<br/>
     <br/>
-    See the man page or <span class=monospace>--help</span> output for more information.
-    <br/>
-    <br/>
-    <br/>
+    See the man page or <span class="monospace">--help</span> output for more information.
   </div>
 
-  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Source code and bug tracker</span>
-  </div>
-  <div style="margin-left: 200px;">
-    <br/>
+  <div class="bar">Source code and bug tracker</div>
+  <div class="text">
     The source and issue tracker is available at <a href="https://github.com/xyproto/setconf">github</a>.<br/>
-    <br/>
-    <span class=monospace-bold>
-      git clone git://github.com/xyproto/setconf.git</span><br class=monospace-bold />
-    <br/>
-    <br/>
+    <pre>git clone git://github.com/xyproto/setconf.git</pre>
   </div>
 
-  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Installation</span>
-  </div>
-  <div style="margin-left: 200px;">
-    <br/>
-
-    <div class=sans-serif-bold>Arch Linux</div>
+  <div class="bar">Installation</div>
+  <div class="text">
+    <div class="sans-serif-bold">Arch Linux</div>
     <p style="margin-left: 42px;">
-    <span class=monospace>pacman -S setconf</span><br/><br/>
+    <span class="monospace">pacman -S setconf</span><br/><br/>
     See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br/>
     </p>
 
-    <div class=sans-serif-bold>NetBSD</div>
+    <div class="sans-serif-bold">NetBSD</div>
     <p style="margin-left: 42px;">
-    <span class=monospace>pkgin install py27-setconf</span><br/><br/>
+    <span class="monospace">pkgin install py27-setconf</span><br/><br/>
     Or from sources:<br/><br/>
-    <span class=monospace>cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br/><br/>
+    <span class="monospace">cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br/><br/>
     </p>
 
-    <div class=sans-serif-bold>Gentoo</div>
+    <div class="sans-serif-bold">Gentoo</div>
     <p style="margin-left: 42px;">
-    <span class=monospace>emerge -av setconf</span><br/><br/>
+    <span class="monospace">emerge -av setconf</span><br/><br/>
     </p>
 
-    <div class=sans-serif-bold>openSUSE</div>
+    <div class="sans-serif-bold">openSUSE</div>
     <p style="margin-left: 42px;">
-    <span class=monospace>zypper install setconf</span><br/><br/>
+    <span class="monospace">zypper install setconf</span><br/><br/>
     </p>
 
-    <div class=sans-serif-bold>Void Linux</div>
+    <div class="sans-serif-bold">Void Linux</div>
     <p style="margin-left: 42px;">
-    <span class=monospace>xbps-install setconf</span><br/><br/>
+    <span class="monospace">xbps-install setconf</span><br/><br/>
     </p>
 
-    <div class=sans-serif-bold>Manually</div>
+    <div class="sans-serif-bold">Manually</div>
 
     <p style="margin-left: 42px;">
       It's recommended to install setconf with your distros package management system.<br/>
@@ -245,7 +221,7 @@
     <br/>
   </div>
 
-  <div style="margin-left: 120px; background-color: white;"><span class=sans-serif-bold>Downloads</span>
+  <div style="margin-left: 120px; background-color: white;"><span class="sans-serif-bold">Downloads</span>
   </div>
   <div style="margin-left: 200px;">
     <br/>
