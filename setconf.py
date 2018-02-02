@@ -874,6 +874,7 @@ def main(args=argv[1:]):
                     break
             if not assignment:
                 sysexit(2)
+
             _, value = keyvalue.split(assignment, 1)
             key = firstpart(keyvalue, False)
 
@@ -889,12 +890,16 @@ def main(args=argv[1:]):
                     assignment = ass
                     break
             if not assignment:
-                sysexit(2)
-            _, value = keyvalue.split(assignment, 1)
-            key = firstpart(keyvalue, False)
-
-            # Uncomment the key in the file, then try to set the value
-            changefile(filename, key, value, uncomment_first=True)
+                # No assigment symbol, use the argument as the key
+                key = keyvalue
+                # Uncomment the given key
+                changefile(filename, key, "", uncomment_first=True)
+            else:
+                # Split keyvalue on the assignment symbol to get a key and a value
+                _, value = keyvalue.split(assignment, 1)
+                key = firstpart(keyvalue, False)
+                # Uncomment the key in the file, then try to set the value
+                changefile(filename, key, value, uncomment_first=True)
         else:
             # Single line replace ("x 123")
             filename = args[0]
