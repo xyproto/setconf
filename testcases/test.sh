@@ -56,8 +56,12 @@ start small
 complete small
 
 start dropbear
-../setconf.py SFTPSERVER_PATH="/usr/bin/sftp-server"
+../setconf.py -d dropbear SFTPSERVER_PATH='"/usr/bin/sftp-server"'
 complete dropbear
+
+start uncomment
+../setconf.py -u uncomment Color
+complete uncomment
 
 echo -n 'Testing nonexisting...'
 ../setconf.py nonexisting x+=1 >/dev/null 2> error.log
