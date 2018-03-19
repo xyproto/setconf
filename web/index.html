@@ -4,6 +4,7 @@
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
   <title>setconf</title>
   <meta content="Alexander F Rødseth" name="author" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
     .sans-serif {
       font-family: Helvetica, Arial, sans-serif;
@@ -35,6 +36,7 @@
       /* for detecting style problems */
       /*color: #ff2080;
       font-family: "Comic Sans MS", "Comic Sans", cursive;*/
+      min-width: 210px;
     }
     a {
       color: #ff6600;
@@ -77,13 +79,31 @@
     }
     .list {
       /*margin-left: 10em;*/
-      margin-left: 17vw;
+      margin-left: 15vw;
       margin-top: 1em;
       margin-bottom: 2.5em;
+    }
+    .example {
+      margin-left: 2.2em;
+      margin-bottom: 0em;
+      padding-bottom: 1.2em;
+    }
+    .comment {
+      margin-left: 1.5em;
     }
     pre {
       margin-top: 1.5em;
       margin-bottom: 0.5em;
+      font-size: 1vh;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      margin-left: 1em;
+      hyphens: auto;
+      hyphenate-character: " \\";
+      -webkit-hyphenate-character: " \\";
+    }
+    .subheader {
+      margin-left: 3em;
     }
     ul {
       list-style: none;
@@ -94,7 +114,7 @@
       padding-left: 1em;
     }
     li:before {
-      content: "★";
+      content: "⊙ "; /* ➲➽►*/
       margin-right: 0.4em;
       font-size: 0.8em;
     }
@@ -102,8 +122,88 @@
       text-align: right;
       font-size: 0.8em;
     }
-    .subheader {
-      margin-left: 3em; /*42px;*/:w
+    .indent {
+      margin-left: 4.5em;
+      margin-bottom: 1.7em;
+    }
+
+    @media all and (min-width: 1100px) {
+      pre {
+        font-size: 0.9em;
+        margin-left: 1em;
+      }
+      .text {
+        margin-left: 17vw;
+      }
+      .list {
+        margin-left 15vw;
+      }
+      .subheader {
+        margin-left: 3em;
+      }
+    }
+
+    @media all and (max-width: 1099px) and (min-width: 550px) {
+      pre {
+        font-size: 0.8em;
+        margin-left: 0.8em;
+      }
+      .text {
+        margin-left: 14vw;
+      }
+      .list {
+        margin-left: 12vw;
+      }
+      .subheader {
+        margin-left: 1em;
+      }
+      .text {
+        margin-left: 1.7em;
+      }
+      .subheader, .bar, #logo {
+        margin-left: 1em;
+      }
+      #headline {
+        margin-left: 0.3em;
+        padding-bottom: 0.2em;
+      }
+      ul,.list {
+        margin-left: 0;
+      }
+      .indent {
+        margin-left: 1.5em;
+        font-size: 0.8em;
+      }
+    }
+
+    @media all and (max-width: 549px) {
+      pre {
+        font-size: 0.7em;
+      }
+      .text {
+        margin-left: 0.4em;
+      }
+      body,.subheader,pre,#headline,.bar,.list,p,.comment,.example {
+        margin-left: 0.2em;
+      }
+      ul {
+        padding-left: 0.2em;
+        margin-left: 1em;
+      }
+      li {
+        padding-left: 0.2em;
+        text-indent: -2em;
+      }
+      li:before {
+        padding-left: 1em;
+      }
+      .indent {
+        margin-left: 0;
+        font-size: 0.5em;
+      }
+      #logo {
+        margin-right: 0;
+      }
     }
   </style>
 </head>
@@ -117,11 +217,9 @@
   <div class="bar">What can it do?</div>
   <div class="text">
     If there's a textfile with fields like these:
-    <pre>
-    CC=abc
-    lights := on
-    compile_today: true
-    </pre>
+    <pre>CC=abc
+lights := on
+compile_today: true</pre>
     <p>
       setconf can change the values to something else. It will take the first key it finds and change the value.
     </p>
@@ -131,13 +229,11 @@
   </div>
   <div class="bar">Example</div>
   <div class="text">
-    <p>
-      You are writing a PKGBUILD for Arch and wish to change a setting without using sed.<br/>
-      Let's say you want to change CC from abc to gcc and that "CC=gcc make" doesn't cut it, for some reason.
-    </p>
-    <p>
-      Then you can use the following command:
-    </p>
+    <p>You are writing a PKGBUILD for Arch and wish to change a setting without using
+    sed.</p>
+    <p>Let's say you want to change CC from abc to gcc and that "CC=gcc make" doesn't cut it, for
+    some reason.</p>
+    <p>Then you can use the following command:</p>
     <pre class="oneliner">setconf Makefile CC gcc</pre>
   </div>
   <div class="bar">Why?</div>
@@ -155,31 +251,21 @@
       <li>It's only one small executable, not a big package.</li>
       <li>It can add options and files if they are missing, by using <span class="monospace">--add</span>.</li>
     </ul>
-    <br/>
   </div>
   <div class="bar">Syntax comparison</div>
   <div class="text">
     <p>
       Setting a value:
     </p>
-    <pre style="margin-left: -2.5em; margin-bottom: -1em;">
-      sed -i filename 's/key=oldvalue/key=value/g'<br/>
-    </pre>
-    <span style="margin-left: 2.5em;">vs</span>
-    <pre style="margin-left: -2.5em;">
-      setconf filename key value
-    </pre>
+    <pre class="example">sed -i filename 's/key=oldvalue/key=value/g'<br/></pre>
+    <span class="comment">vs</span>
+    <pre class="example">setconf filename key value</pre>
     <p>
       Setting a value, adding the key and value if missing and creating the file if missing:
     </p>
-    <pre style="margin-left: -2.5em;">
-      grep -q 'x=' file 2&gt;/dev/null &amp;&amp; \
-        sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file
-    </pre>
-    <span style="margin-left: 2.5em;">vs</span>
-    <pre style="margin-left: -2.5em;">
-      setconf -a file x=7
-    </pre>
+    <pre class="example">grep -q 'x=' file 2&gt;/dev/null &amp;&amp; sed 's/x=.*/x=7/g' -i file || echo 'x=7' &gt;&gt; file</pre>
+    <span class="comment">vs</span>
+    <pre class="example">setconf -a file x=7</pre>
     <p>
       The old value may have to be provided when performing replacements with <i>sed</i>.
     </p>
@@ -213,30 +299,31 @@
   <div class="text">
     <div class="sans-serif-bold">Arch Linux</div>
     <p class="subheader">
-      <span class="monospace-bold">pacman -S setconf</span><br/><br/>
-      See also: <a href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a><br/>
-    </p>
+    <pre>pacman -S setconf</pre><br/>
+    <div class="comment">See also: <a
+         href="http://www.archlinux.org/packages/community/any/setconf/">package webpage</a></div>
+    </p><br/>
 
     <div class="sans-serif-bold">NetBSD</div>
     <p class="subheader">
-      <span class="monospace-bold">pkgin install py27-setconf</span><br/><br/>
-      Or from sources:<br/><br/>
-      <span class="monospace-bold">cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</span><br/><br/>
+      <pre>pkgin install py27-setconf</pre><br/>
+      <div class="comment">Or from sources:</div>
+      <pre>cd /usr/pkgsrc/sysutils/py-setconf &amp;&amp; make install</pre><br/>
     </p>
 
     <div class="sans-serif-bold">Gentoo</div>
     <p class="subheader">
-      <span class="monospace-bold">emerge -av setconf</span><br/><br/>
+    <pre>emerge -av setconf</pre><br/>
     </p>
 
     <div class="sans-serif-bold">openSUSE</div>
     <p class="subheader">
-      <span class="monospace-bold">zypper install setconf</span><br/><br/>
+      <pre>zypper install setconf</pre><br/>
     </p>
 
     <div class="sans-serif-bold">Void Linux</div>
     <p class="subheader">
-      <span class="monospace-bold">xbps-install setconf</span><br/><br/>
+      <pre>xbps-install setconf</pre><br/>
     </p>
 
     <div class="sans-serif-bold">Manually</div>
@@ -246,22 +333,19 @@
       <br/>
       Here is a quick, manual way of installing the latest version of setconf:<br/>
     </p>
-    <pre>
-      curl -s http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz | tar JxC /tmp
-      sudo install -Dm755 /tmp/setconf-0.7.5/setconf.py /usr/bin/setconf
-      sudo install -Dm644 /tmp/setconf-0.7.5/setconf.1.gz /usr/share/man/man1/setconf.1.gz
-    </pre>
+    <pre
+    class="indent">curl&nbsp;-s&nbsp;http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz&nbsp;|&nbsp;tar&nbsp;JxC&nbsp;/tmp
+sudo&nbsp;install&nbsp;-Dm755&nbsp;/tmp/setconf-0.7.5/setconf.py&nbsp;/usr/bin/setconf
+sudo&nbsp;install&nbsp;-Dm644&nbsp;/tmp/setconf-0.7.5/setconf.1.gz&nbsp;/usr/share/man/man1/setconf.1.gz</pre>
     <p class="subheader">
     Run the two last commands as root instead of with sudo, if you prefer.
-    <br/>
     </p>
-    <br/>
   </div>
 
     <div class="bar">Downloads</div>
     <div class="text">
       Download the <a href="http://nuitka.net/">Nuitka</a>-compatible source for <a href="http://setconf.roboticoverlords.org/setconf-0.7.5.tar.xz">setconf 0.7.5</a><br/>
     </div>
-    <div class="footer">Alexander F Rødseth 2017</div>
+    <div class="footer">Alexander F Rødseth 2018</div>
   </body>
 </html>
