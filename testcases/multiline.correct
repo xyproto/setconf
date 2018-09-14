@@ -1,0 +1,3 @@
+# Toolchain flags
+WARNFLAGS := -w
+# BeOS/Haiku standard library headers issue warnings

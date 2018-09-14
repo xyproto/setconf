@@ -68,3 +68,7 @@ echo -n 'Testing nonexisting...'
 grep Errno error.log \
   && (echo FAIL; cat error.log) \
   || (echo ok; rm -f error.log)
+
+start multiline
+../setconf.py WARNFLAGS "-w" 's\n'
+complete multiline
