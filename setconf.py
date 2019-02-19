@@ -412,7 +412,6 @@ def test_changefile_uncomment_kernel():
 
 
 def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0, define=False):
-
     data = bs(data)
     key = bs(key)
     value = bs(value)
@@ -420,9 +419,13 @@ def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0,
 
     if key not in data:
         return data
+    # If the endstring marker ends with '$', use a newline instead
+    if endstring.endswith(b'$'):
+        endstring = endstring[:-1] + b'\n'
+    # Check if the endstring exists in the data
     if (endstring != NL) and (endstring not in data):
         if verbose:
-            print("Multiline end marker not found: " + endstring)
+            print("Multiline end marker not found: " + str(endstring))
         return data
     startpos = data.find(key, searchfrom)
     if endstring in data:
@@ -434,6 +437,7 @@ def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0,
 
     linestartpos = data[:startpos].rfind(NL) + 1
     line = data[linestartpos:endpos + 1]
+
     # If the first part of the line is not a key (could be because it's commented out)...
     if not firstpart(line):
         # Search again, from endpos this time
@@ -441,8 +445,10 @@ def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0,
 
     after = data[endpos + len(endstring):]
     newbetween = changeline(between, value)
-    if between.endswith(NL):
+
+    if between.endswith(NL) or (NL in between and endstring.endswith(NL)):
         newbetween += NL
+
     result = before + newbetween + after
     return result
 

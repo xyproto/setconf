@@ -70,5 +70,5 @@ grep Errno error.log \
   || (echo ok; rm -f error.log)
 
 start multiline
-../setconf.py WARNFLAGS "-w" 's\n'
+../setconf.py multiline WARNFLAGS "-w" 's$'
 complete multiline
