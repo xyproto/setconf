@@ -4,7 +4,7 @@
 # setconf
 # Utility for setting options in configuration files.
 #
-# Alexander F Rødseth <xyproto@archlinux.org>
+# Alexander F. Rødseth <xyproto@archlinux.org>
 #
 # GPL2
 #
@@ -25,6 +25,7 @@
 # Mar 2016
 # Oct 2017
 # Nov 2017
+# Feb 2019
 #
 
 from sys import argv
@@ -35,7 +36,7 @@ from tempfile import mkstemp
 from decimal import Decimal
 from base64 import b64decode
 
-VERSION = "0.7.5"
+VERSION = "0.7.6"
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 

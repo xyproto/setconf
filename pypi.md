@@ -7,7 +7,7 @@
 
 Have a good `~/.pypirc` file, before uploading to the server, then be prepared to pgp sign and:
 
-    twine upload --sign dist/setconf-0.7.5*
+    twine upload --sign dist/setconf-0.7.6*
 
 # Upload to pypi
 

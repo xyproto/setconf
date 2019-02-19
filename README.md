@@ -12,6 +12,7 @@ Pull requests are welcome.
 
 Compile time features
 ---------------------
+
 * It can be compiled to native with <a href="http://nuitka.net/">nuitka</a>. Try these parameters: `--exe --lto --python-version=2.7`
 
 
@@ -31,6 +32,14 @@ TODO
 * Document which assignment symbols and comment markers are supported.
 * Refactor.
 * Support both `#define` and `%define` (ref asmttpd).
+
+
+Changes from 0.7.5 to 0.7.6
+---------------------------
+
+* Add test cases.
+* Allow uncommenting keys without providing a value.
+* Update documentation.
 
 Changes from 0.7.4 to 0.7.5
 ---------------------------
@@ -130,5 +139,5 @@ General information
 -------------------
 
 * License: GPL2
-* Author: Alexander F Rødseth
+* Author: Alexander F. Rødseth
 
