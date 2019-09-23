@@ -9,6 +9,7 @@ It has no dependencies except the built-in Python modules.
 
 Pull requests are welcome.
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg)](https://repology.org/project/setconf/versions)
 
 Compile time features
 ---------------------
