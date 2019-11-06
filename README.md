@@ -33,6 +33,7 @@ TODO
 * Document which assignment symbols and comment markers are supported.
 * Refactor.
 * Support both `#define` and `%define` (ref asmttpd).
+* When changing settings in JSON files, a line may look like this: `"go.formatTool": "gofmt",`. Add a flag for being able to set the key and value without having to specify the quotes and the final comma.
 
 
 Changes from 0.7.5 to 0.7.6
