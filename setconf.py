@@ -281,7 +281,11 @@ def changefile(filename, key, value, dummyrun=False, define=False, uncomment_fir
     try:
         with open(filename, 'rb') as f:
             data = f.read()
-            lines = data.split(NL)[:-1]
+            lines = data.split(NL)
+            for idx in range(len(lines) - 1, 0, -1):
+                if lines[idx] != b'':
+                    break
+                del lines[idx]
     except IOError:
         print("Can't read %s" % (filename))
         sysexit(2)
