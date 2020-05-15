@@ -13,9 +13,9 @@ setup(name="setconf",
       license="GPLv2",
       py_modules=["setconf"],
       entry_points={
-        "console_scripts" : [
-            "setconf = setconf:main",
-        ]
+          "console_scripts": [
+              "setconf = setconf:main",
+          ]
       },
       classifiers=[
           "Environment :: Console",
@@ -24,4 +24,4 @@ setup(name="setconf",
           "Topic :: System :: Shells",
           "Topic :: Utilities",
       ]
-)
+      )
