@@ -36,6 +36,12 @@ TODO
 * When changing settings in JSON files, a line may look like this: `"go.formatTool": "gofmt",`. Add a flag for being able to set the key and value without having to specify the quotes and the final comma.
 
 
+Changes from 0.7.6 to 0.7.7
+---------------------------
+
+* Apply fix for trailing newlines by @zappolowski (issue #16).
+* Also test with Python 3.8.
+
 Changes from 0.7.5 to 0.7.6
 ---------------------------
 
@@ -142,4 +148,3 @@ General information
 
 * License: GPL2
 * Author: Alexander F. Rødseth
-

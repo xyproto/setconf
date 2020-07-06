@@ -5,7 +5,7 @@ import sys
 from setuptools import setup
 
 setup(name="setconf",
-      version="0.7.6",
+      version="0.7.7",
       description="Change configuration settings in text files",
       url="https://setconf.roboticoverlords.org/",
       author="Alexander F. Rødseth",
