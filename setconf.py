@@ -830,10 +830,28 @@ def main(args=argv[1:]):
             print("")
         elif args[0] in ["-v", "--version"]:
             print(VERSION)
-    elif len(args) == 2:
+        return
+
+    # more than one argument or flag given
+
+    flags = {"define": False, "add": False, "uncomment": False}
+    parsed_args = []
+    for arg in args:
+        if arg == "-d" or arg == "--define":
+            flags["define"] = True
+        elif arg == "-a" or arg == "--add":
+            flags["add"] = True
+        elif arg == "-u" or arg == "--uncomment":
+            flags["uncomment"] = True
+        else:
+            parsed_args.append(arg)
+
+    has_flags = True in flags.values()
+
+    if not has_flags and len(parsed_args) == 2:
         # Single line replace: "x=123" or "x+=2"
-        filename = args[0]
-        keyvalue = bs(args[1])
+        filename = parsed_args[0]
+        keyvalue = bs(parsed_args[1])
         if b"+=" in keyvalue:
             key, value = keyvalue.split(b"+=", 1)
             try:
@@ -859,11 +877,11 @@ def main(args=argv[1:]):
             changefile(filename, key, value)
         else:
             sysexit(2)
-    elif len(args) == 3:
-        if args[0] in ["-a", "--add"]:
+    elif has_flags and len(parsed_args) == 2:
+        if flags["add"]:
             # Single line replace/add ("x 123")
-            filename = args[1]
-            keyvalue = bs(args[2])
+            filename = parsed_args[0]
+            keyvalue = bs(parsed_args[1])
 
             create_if_missing(filename)
 
@@ -885,9 +903,9 @@ def main(args=argv[1:]):
                     data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
-        elif args[0] in ["-d", "--define"]:
-            filename = args[1]
-            keyvalue = bs(args[2])
+        elif flags["define"]:
+            filename = parsed_args[0]
+            keyvalue = bs(parsed_args[1])
 
             assignment = None
             for ass in ASSIGNMENTS:
@@ -902,9 +920,9 @@ def main(args=argv[1:]):
 
             # Change the #define value in the file
             changefile(filename, key, value, define=True)
-        elif args[0] in ["-u", "--uncomment"]:
-            filename = args[1]
-            keyvalue = bs(args[2])
+        elif flags["uncomment"]:
+            filename = parsed_args[0]
+            keyvalue = bs(parsed_args[1])
 
             assignment = None
             for ass in ASSIGNMENTS:
@@ -922,17 +940,17 @@ def main(args=argv[1:]):
                 key = firstpart(keyvalue, False)
                 # Uncomment the key in the file, then try to set the value
                 changefile(filename, key, value, uncomment_first=True)
-        else:
-            # Single line replace ("x 123")
-            filename = args[0]
-            key = bs(args[1])
-            value = bs(args[2])
-            changefile(filename, key, value)
-    elif len(args) == 4:
-        if args[0] in ["-a", "--add"]:
-            filename = args[1]
-            key = bs(args[2])
-            value = bs(args[3])
+    elif not has_flags and len(parsed_args) == 3:
+        # Single line replace ("x 123")
+        filename = parsed_args[0]
+        key = bs(parsed_args[1])
+        value = bs(parsed_args[2])
+        changefile(filename, key, value)
+    elif has_flags and len(parsed_args) == 3:
+        if flags["add"]:
+            filename = parsed_args[0]
+            key = bs(parsed_args[1])
+            value = bs(parsed_args[2])
 
             create_if_missing(filename)
 
@@ -945,20 +963,27 @@ def main(args=argv[1:]):
                     data = f.read()
                 if not has_key(data, key):
                     addtofile(filename, keyvalue)
-        elif args[0] in ["-u", "--uncomment"]:
-            filename = args[1]
-            key = bs(args[2])
-            value = bs(args[3])
+        elif flags["uncomment"]:
+            filename = parsed_args[0]
+            key = bs(parsed_args[1])
+            value = bs(parsed_args[2])
 
             # Uncomment the key in the file, then try to set the value
             changefile(filename, key, value, uncomment_first=True)
-        else:
-            # Multiline replace
-            filename = args[0]
-            key = bs(args[1])
-            value = bs(args[2])
-            endstring = bs(args[3])
-            changefile_multiline(filename, key, value, endstring)
+    elif not has_flags and len(parsed_args) == 4:
+        # Multiline replace
+        filename = parsed_args[0]
+        key = bs(parsed_args[1])
+        value = bs(parsed_args[2])
+        endstring = bs(parsed_args[3])
+        changefile_multiline(filename, key, value, endstring)
+    elif has_flags and len(parsed_args) == 4:
+        # Multiline replace
+        filename = parsed_args[0]
+        key = bs(parsed_args[1])
+        value = bs(parsed_args[2])
+        endstring = bs(parsed_args[3])
+        changefile_multiline(filename, key, value, endstring)
     else:
         sysexit(1)
 
