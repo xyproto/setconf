@@ -148,6 +148,8 @@ def test_changeline():
     passes = passes and changeline("  ost = 2", "3") == b"  ost = 3"
     passes = passes and changeline("   /* ost = 2 */", "3") == b"   /* ost = 2 */"
     passes = passes and changeline("æøå =>\t123", "256") == bs("æøå =>\t256")
+    passes = passes and changeline("name=value # comment: whatever", "newvalue") == bs("name=newvalue")
+    passes = passes and changeline("name=value // comment: whatever", "newvalue") == bs("name=newvalue")
     print("Changeline passes: %s" % (passes))
     return passes
 
