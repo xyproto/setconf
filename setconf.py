@@ -109,7 +109,15 @@ def changeline(line, newvalue):
     line = bs(line)
     newvalue = bs(newvalue)
 
+    if b"=" in line and b"#" in line and line.index(b"=") < line.index(b"#"):
+        # special case for "=" assignments followed by a "#" comment
+        line = line[:line.index(b"#")]
+    elif b"=" in line and b"//" in line and line.index(b"=") < line.index(b"//"):
+        # special case for "=" assignments followed by a "//" comment
+        line = line[:line.index(b"//")]
+
     first = firstpart(line)
+
     if first:
         if b"= " in line or b": " in line or b"> " in line:
             return first + b" " + newvalue
