@@ -72,3 +72,7 @@ grep Errno error.log \
 start multiline
 ../setconf.py multiline WARNFLAGS "-w" 's$'
 complete multiline
+
+start sh
+../setconf.py sh name newvalue
+complete sh
