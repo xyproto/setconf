@@ -1,4 +1,4 @@
-![Setconf Logo](web/icon_128x128.png)
+![Setconf Logo](web/setconflogo.png)
 
 ![Build](https://github.com/xyproto/setconf/workflows/Build/badge.svg) [![License](https://img.shields.io/badge/license-GPL2-green.svg?style=flat)](https://raw.githubusercontent.com/xyproto/setconf/main/COPYING)
 
