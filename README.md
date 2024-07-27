@@ -1,7 +1,6 @@
-setconf
-=======
+![Setconf Logo](web/icon_128x128.png)
 
-[![Build Status](https://travis-ci.com/xyproto/setconf.svg?branch=master)](https://travis-ci.com/xyproto/setconf)
+![Build](https://github.com/xyproto/setconf/workflows/Build/badge.svg) [![License](https://img.shields.io/badge/license-GPL2-green.svg?style=flat)](https://raw.githubusercontent.com/xyproto/setconf/main/COPYING)
 
 Setconf is a small utility for changing settings in configuration textfiles.
 

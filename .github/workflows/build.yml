@@ -1,4 +1,4 @@
-name: Setconf
+name: Build
 
 on:
   push:
