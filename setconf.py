@@ -185,9 +185,13 @@ def test_changeline():
     return passes
 
 
-def uncomment(lines, key):
-    """Given a list of lines and a key, uncomment lines starting with a single line comment."""
+def uncomment(lines, key, value=None):
+    """Given a list of lines and a key, uncomment lines starting with a single line comment.
+
+    With a value, only lines already set to that value are uncommented."""
     key = bs(key)
+    if value is not None:
+        value = bs(value)
 
     newlines = []
     for line in lines:
@@ -204,7 +208,13 @@ def uncomment(lines, key):
                     commentpos = line.find(comment_marker)
                     after_comment_marker = line[commentpos + len(comment_marker):]
                     stripped_contents = after_comment_marker.strip()
-                    if stripped_contents.startswith(key):
+                    if value is None:
+                        matches = stripped_contents.startswith(key)
+                    else:
+                        found_key, found_value = parts(stripped_contents, False)
+                        matches = (found_key is not None and found_key.strip() == key
+                                   and found_value is not None and found_value.strip() == value)
+                    if matches:
                         newlines.append(line[:commentpos] + after_comment_marker)
                         break
             else:
@@ -378,6 +388,39 @@ def changefile(filename, key, value, dummyrun=False, define=False, uncomment_fir
         changed_contents += NL
     if dummyrun:
         return data != changed_contents
+    try:
+        with open(filename, 'wb') as f:
+            f.write(changed_contents)
+    except IOError:
+        print("No write permission: %s" % (filename))
+        sysexit(2)
+
+
+def uncommentfile(filename, key, value=None):
+    """Uncomment matching lines in a file, leaving all other lines untouched."""
+    key = bs(key)
+    if value is not None:
+        value = bs(value)
+    try:
+        with open(filename, 'rb') as f:
+            data = f.read()
+            lines = data.split(NL)
+            for idx in range(len(lines) - 1, 0, -1):
+                if lines[idx] != b'':
+                    break
+                del lines[idx]
+    except IOError:
+        print("Can't read %s" % (filename))
+        sysexit(2)
+    final_nl = True
+    if NL not in data:
+        lines = [data]
+        final_nl = False
+    elif not data.endswith(NL):
+        final_nl = False
+    changed_contents = NL.join(uncomment(lines, key, value))
+    if final_nl:
+        changed_contents += NL
     try:
         with open(filename, 'wb') as f:
             f.write(changed_contents)
@@ -826,6 +869,7 @@ def tests():
     passes = passes and test_uncomment()
     passes = passes and test_changefile_uncomment()
     passes = passes and test_changefile_uncomment_kernel()
+    passes = passes and test_uncommentfile()
     passes = passes and test_comment_out_define()
     passes = passes and test_changefile_undefine()
     passes = passes and test_has_key_get_value()
@@ -834,6 +878,26 @@ def tests():
         print("All tests pass!")
     else:
         print("Tests fail.")
+
+
+def test_uncommentfile():
+    testcontent = b"""#X=opt1
+#X=opt2
+#X=opt3
+"""
+    testcontent_changed = b"""#X=opt1
+X=opt2
+#X=opt3
+"""
+    filename = mkstemp()[1]
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
+    uncommentfile(filename, "X", "opt2")
+    with open(filename, 'rb') as f:
+        newcontent = f.read()
+    passes = newcontent == testcontent_changed
+    print("Uncommentfile passes: %s" % (passes))
+    return passes
 
 
 def create_if_missing(filename):
@@ -1111,11 +1175,11 @@ def main(args=argv[1:]):
             key, value, ass = split_keyvalue(keyvalue)
             if key is None:
                 # No assignment symbol, use the argument as the key
-                changefile(filename, keyvalue, b"", uncomment_first=True)
+                uncommentfile(filename, keyvalue)
             else:
-                changefile(filename, key, value, uncomment_first=True)
+                uncommentfile(filename, key, value)
         elif nargs == 3:
-            changefile(filename, bs(positional[1]), bs(positional[2]), uncomment_first=True)
+            uncommentfile(filename, bs(positional[1]), bs(positional[2]))
         return
 
 
