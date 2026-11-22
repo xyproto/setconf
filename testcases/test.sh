@@ -14,65 +14,67 @@ complete() {
     || echo 'FAIL'
 }
 
+P='/usr/bin/env python ../setconf.py'
+
 start PKGBUILD
-../setconf.py PKGBUILD pkgname=asdfasdf
-../setconf.py PKGBUILD pkgrel+=1
+$P PKGBUILD pkgname=asdfasdf
+$P PKGBUILD pkgrel+=1
 complete PKGBUILD
 
 start testcase2
-../setconf.py testcase2 x+=2
-../setconf.py testcase2 x-=3
-../setconf.py testcase2 z+=1000
-../setconf.py testcase2 d1-=.1
-../setconf.py testcase2 d1+=0.3
-../setconf.py testcase2 d2+=.02
-../setconf.py testcase2 d2-=0.01
-../setconf.py testcase2 s+=pie
-../setconf.py testcase2 y-=0.31
+$P testcase2 x+=2
+$P testcase2 x-=3
+$P testcase2 z+=1000
+$P testcase2 d1-=.1
+$P testcase2 d1+=0.3
+$P testcase2 d2+=.02
+$P testcase2 d2-=0.01
+$P testcase2 s+=pie
+$P testcase2 y-=0.31
 complete testcase2
 
 start nonewline
-../setconf.py nonewline x=3
+$P nonewline x=3
 complete nonewline
 
 start nonewline2
-../setconf.py -a nonewline2 y=7
+$P -a nonewline2 y=7
 complete nonewline2
 
 start aurutils
-../setconf.py aurutils pkgrel+=1
+$P aurutils pkgrel+=1
 complete aurutils
 
 start printk
-../setconf.py -d printk CONSOLE_LOGLEVEL_DEFAULT=4
+$P -d printk CONSOLE_LOGLEVEL_DEFAULT=4
 complete printk
 
 start kernel_config
-../setconf.py -u kernel_config CONFIG_ULTRIX_PARTITION=y
+$P -u kernel_config CONFIG_ULTRIX_PARTITION=y
 complete kernel_config
 
 start small
-../setconf.py -u small f 42
+$P -u small f 42
 complete small
 
 start dropbear
-../setconf.py -d dropbear SFTPSERVER_PATH='"/usr/bin/sftp-server"'
+$P -d dropbear SFTPSERVER_PATH='"/usr/bin/sftp-server"'
 complete dropbear
 
 start uncomment
-../setconf.py -u uncomment Color
+$P -u uncomment Color
 complete uncomment
 
 echo -n 'Testing nonexisting...'
-../setconf.py nonexisting x+=1 >/dev/null 2> error.log
+$P nonexisting x+=1 >/dev/null 2> error.log
 grep Errno error.log \
   && (echo FAIL; cat error.log) \
   || (echo ok; rm -f error.log)
 
 start multiline
-../setconf.py multiline WARNFLAGS "-w" 's$'
+$P multiline WARNFLAGS "-w" 's$'
 complete multiline
 
 start sh
-../setconf.py sh name newvalue
+$P sh name newvalue
 complete sh
