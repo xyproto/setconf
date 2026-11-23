@@ -408,7 +408,7 @@ def changefile(filename, key, value, dummyrun=False, define=False, uncomment_fir
         sysexit(2)
 
 
-def uncommentfile(filename, key, value=None):
+def uncommentfile(filename, key, value=None, dummyrun=False):
     """Uncomment matching lines in a file, leaving all other lines untouched."""
     key = bs(key)
     if value is not None:
@@ -433,6 +433,8 @@ def uncommentfile(filename, key, value=None):
     changed_contents = NL.join(uncomment(lines, key, value))
     if final_nl:
         changed_contents += NL
+    if dummyrun:
+        return data != changed_contents
     try:
         with open(filename, 'wb') as f:
             f.write(changed_contents)
@@ -882,6 +884,7 @@ def tests():
     passes = passes and test_changefile_uncomment()
     passes = passes and test_changefile_uncomment_kernel()
     passes = passes and test_uncommentfile()
+    passes = passes and test_uncomment_mode()
     passes = passes and test_comment_out_define()
     passes = passes and test_changefile_undefine()
     passes = passes and test_has_key_get_value()
@@ -890,6 +893,7 @@ def tests():
         print("All tests pass!")
     else:
         print("Tests fail.")
+        sysexit(1)
 
 
 def test_uncommentfile():
@@ -909,6 +913,28 @@ X=opt2
         newcontent = f.read()
     passes = newcontent == testcontent_changed
     print("Uncommentfile passes: %s" % (passes))
+    return passes
+
+
+def test_uncomment_mode():
+    testcontent = b"#X=opt1" + NL + b"#X=opt2" + NL + b"#X=opt3" + NL
+    testcontent_changed = b"#X=opt1" + NL + b"X=opt2" + NL + b"#X=opt3" + NL
+    filename = mkstemp()[1]
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
+    main(["-u", filename, "X=opt2"])
+    with open(filename, 'rb') as f:
+        newcontent = f.read()
+    passes = newcontent == testcontent_changed
+    testcontent = b"#Y=other" + NL
+    testcontent_changed = b"Y=new" + NL
+    with open(filename, 'wb') as f:
+        f.write(testcontent)
+    main(["-u", filename, "Y=new"])
+    with open(filename, 'rb') as f:
+        newcontent = f.read()
+    passes = passes and newcontent == testcontent_changed
+    print("Uncomment mode passes: %s" % (passes))
     return passes
 
 
@@ -1063,7 +1089,7 @@ def parse_args(args):
                 print("Conflicting flags: %s and %s" % (MODE_SHORT_FLAG[mode], MODE_SHORT_FLAG[new_mode]))
                 sysexit(1)
             mode = new_mode
-        elif arg.startswith("-") and len(arg) > 1:
+        elif arg.startswith("-") and len(arg) > 1 and not positional:
             print("Unknown option: %s" % (arg))
             sysexit(1)
         else:
@@ -1188,10 +1214,14 @@ def main(args=argv[1:]):
             if key is None:
                 # No assignment symbol, use the argument as the key
                 uncommentfile(filename, keyvalue)
-            else:
-                uncommentfile(filename, key, value)
-        elif nargs == 3:
-            uncommentfile(filename, bs(positional[1]), bs(positional[2]))
+                return
+        else:
+            key = bs(positional[1])
+            value = bs(positional[2])
+        if uncommentfile(filename, key, value, dummyrun=True):
+            uncommentfile(filename, key, value)
+        else:
+            changefile(filename, key, value, uncomment_first=True)
         return
 
 
