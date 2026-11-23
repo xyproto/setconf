@@ -245,7 +245,8 @@ def change(lines, key, value, define=False):
             newlines.append(line)
             continue
         if define:
-            if line.strip().startswith(b"#define") and line.count(b" ") >= 2:
+            stripped = line.strip()
+            if (stripped.startswith(b"#define") or stripped.startswith(b"%define")) and line.count(b" ") >= 2:
                 firstp = line.split()[1].strip()
                 oldvalue = line.split()[2].strip()
                 if firstp == key:
@@ -301,6 +302,16 @@ def test_change_define():
     output = change([testcontent], "X", "42", define=True)[0]
     passes = passes and output == testcontent_changed
 
+    testcontent = b'#define SFTPSERVER_PATH "/usr/libexec/sftp-server"'
+    testcontent_changed = b'#define SFTPSERVER_PATH "/asdf/qwerty"'
+    output = change([testcontent], "SFTPSERVER_PATH", '"/asdf/qwerty"', define=True)[0]
+    passes = passes and output == testcontent_changed
+
+    testcontent = b'%define SFTPSERVER_PATH "/usr/libexec/sftp-server"'
+    testcontent_changed = b'%define SFTPSERVER_PATH "/asdf/qwerty"'
+    output = change([testcontent], "SFTPSERVER_PATH", '"/asdf/qwerty"', define=True)[0]
+    passes = passes and output == testcontent_changed
+
     print("Change define passes: %s" % (passes))
     return passes
 
@@ -313,6 +324,11 @@ def comment_out_define(lines, key):
         if stripped.startswith(b"#define") and len(stripped.split()) >= 2:
             if stripped.split()[1] == key:
                 pos = line.find(b"#")
+                newlines.append(line[:pos] + b"// " + line[pos:])
+                continue
+        elif stripped.startswith(b"%define") and len(stripped.split()) >= 2:
+            if stripped.split()[1] == key:
+                pos = line.find(b"%")
                 newlines.append(line[:pos] + b"// " + line[pos:])
                 continue
         newlines.append(line)
@@ -337,6 +353,12 @@ def test_comment_out_define():
     testcontent = b"#define Y 12"
     output = comment_out_define([testcontent], b"X")[0]
     passes = passes and output == testcontent
+
+    # Also test %define
+    testcontent = b"%define X 12"
+    testcontent_changed = b"// %define X 12"
+    output = comment_out_define([testcontent], b"X")[0]
+    passes = passes and output == testcontent_changed
 
     print("Comment out define passes: %s" % (passes))
     return passes
