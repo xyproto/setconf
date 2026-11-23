@@ -1,5 +1,7 @@
 #!/bin/sh
 
+failed=0
+
 start() {
   filename=$1
   echo -n "Testing $filename..."
@@ -9,9 +11,13 @@ start() {
 
 complete() {
   filename=$1
-  diff "$filename" "$filename.correct" \
-    && (echo 'ok'; rm -f "$filename") \
-    || echo 'FAIL'
+  if diff "$filename" "$filename.correct"; then
+    echo 'ok'
+    rm -f "$filename"
+  else
+    echo 'FAIL'
+    failed=1
+  fi
 }
 
 P='/usr/bin/env python ../setconf.py'
@@ -67,9 +73,14 @@ complete uncomment
 
 echo -n 'Testing nonexisting...'
 $P nonexisting x+=1 >/dev/null 2> error.log
-grep Errno error.log \
-  && (echo FAIL; cat error.log) \
-  || (echo ok; rm -f error.log)
+if grep Errno error.log; then
+  echo FAIL
+  cat error.log
+  failed=1
+else
+  echo ok
+  rm -f error.log
+fi
 
 start multiline
 $P multiline WARNFLAGS "-w" 's$'
@@ -78,3 +89,5 @@ complete multiline
 start sh
 $P sh name newvalue
 complete sh
+
+exit $failed
