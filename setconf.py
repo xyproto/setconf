@@ -8,11 +8,12 @@
 #
 # GPL2
 #
+# Updated:
 # May 2009, Dec 2011, Jan 2012, Mar 2012, Jun 2012, Jul 2012, Mar 2013,
 # Jul 2013, Nov 2013, Aug 2014, Oct 2014, Dec 2014, Mar 2015, Jun 2015,
 # Mar 2016, Oct 2017, Nov 2017, Feb 2019, Jul 2020, Mar 2026, Nov 2026
 #
-# --- Contributors ---
+# Contributors:
 # Dimitri Merejkowsky <d.merej@gmail.com>
 # Avindra Goolcharan <aavindraa@gmail.com>
 # Emanuele Torre <torreemanuele6@gmail.com>
