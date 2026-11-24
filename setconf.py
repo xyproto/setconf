@@ -28,7 +28,7 @@ from tempfile import mkstemp
 from decimal import Decimal
 from base64 import b64decode
 
-VERSION = "0.7.7"
+VERSION = "0.7.8"
 
 # TODO: Use optparse or argparse if shedskin is no longer a target.
 
