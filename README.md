@@ -10,7 +10,7 @@ Both Python 2 and Python 3 are supported.
 
 Pull requests are welcome.
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg)](https://repology.org/project/setconf/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg?columns=2)](https://repology.org/project/setconf/versions)
 
 Compile time features
 ---------------------
