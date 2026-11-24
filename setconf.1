@@ -21,6 +21,7 @@ If there's a textfile with fields like these:
 .sp
 Setconf can change the values to something else.
 The value related to the first key found will be changed to the given value.
+Use key+=amount or key-=amount to adjust a numeric value.
 .sp
 For example,
 .B "CC "
@@ -49,7 +50,7 @@ is a value.
 .sp
 .B setconf my.conf x=1
   Sets x to 1 in my.conf, even if my.conf uses a different assignment,
-  like x := 42, x : 42, x == 42, x :: 42 or x => 42.
+  like x := 42, x : 42, x == 42, x :: 42, x => 42 or x ?= 42.
 .sp
 .B setconf -a server.ini 'Z => 99'
   Adds Z => 99 to server.ini
@@ -87,7 +88,10 @@ adds an option, if not already present.
 Must be followed by a filename and a key/value pair.
 .TP
 .B \-d or \-\-define
-changes a single-line #define value
+changes a single-line #define or %define value
+.TP
+.B \-D or \-\-undefine
+comments out a #define or %define
 .TP
 .B \-u or \-\-uncomment
 uncomments a key before changing the value
