@@ -31,8 +31,21 @@ TODO
 * Fix the behavior when `"` is the multiline marker and `:` the delimiter (the [yml](https://fdik.org/yml/) format).
 * Document which assignment symbols and comment markers are supported.
 * Refactor.
-* Support both `#define` and `%define` (ref asmttpd).
 * When changing settings in JSON files, a line may look like this: `"go.formatTool": "gofmt",`. Add a flag for being able to set the key and value without having to specify the quotes and the final comma.
+
+
+Changes from 0.7.7 to 0.7.8
+---------------------------
+
+* Fix a typo on the web page (thanks @emanuele6).
+* Fix issue #19 (extra space added when comment contains a colon + space), thanks @felixonmars.
+* Improve how flags are handled.
+* Update documentation.
+* Add more tests.
+* Add a `-D`/`--undefine` flag.
+* Minor fixes + make the code more robust.
+* Update CI configuration.
+* Also support `%define` (in addition to `#define`).
 
 
 Changes from 0.7.6 to 0.7.7
