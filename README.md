@@ -39,14 +39,15 @@ Changes from 0.7.7 to 0.7.8
 ---------------------------
 
 * Fix a typo on the web page (thanks @emanuele6).
-* Fix issue #19 (extra space added when comment contains a colon + space), thanks @felixonmars.
+* Fix issue #19 (Extra space added when comment contains a colon + space), thanks @felixonmars.
+* Fix issue #12 (Uncomment only the matching line in uncomment mode), thanks @Run_as_daemon.
 * Improve how flags are handled.
-* Update documentation.
-* Add more tests.
 * Add a `-D`/`--undefine` flag.
 * Minor fixes + make the code more robust.
-* Update CI configuration.
 * Also support `%define` (in addition to `#define`).
+* Add more tests.
+* Update CI configuration.
+* Update documentation.
 
 Changes from 0.7.6 to 0.7.7
 ---------------------------
