@@ -578,7 +578,7 @@ def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0,
         return data
     # If the endstring marker ends with '$', use a newline instead
     if endstring.endswith(b'$'):
-        endstring = endstring[:-1] + b'\n'
+        endstring = endstring[:-1] + NL
     # Check if the endstring exists in the data
     if (endstring != NL) and (endstring not in data):
         if verbose:
@@ -725,7 +725,7 @@ build() {
     # test 12
     testcontent = native_newlines(b"# md5sum=('abc123')\nmd5sum=('def456')\nmd5sum=('ghi789')\n")
     testcontent_changed = native_newlines(b"# md5sum=('abc123')\nmd5sum=('OST')\nmd5sum=('ghi789')\n")
-    a = change_multiline(testcontent, "md5sum", "('OST')", NL, verbose=False)
+    a = change_multiline(testcontent, "md5sum", "('OST')", ")$", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
     if not passes:
