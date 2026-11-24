@@ -2,8 +2,6 @@
 
 ![Build](https://github.com/xyproto/setconf/workflows/Build/badge.svg) [![License](https://img.shields.io/badge/license-GPL2-green.svg?style=flat)](https://raw.githubusercontent.com/xyproto/setconf/main/COPYING)
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg?columns=3)](https://repology.org/project/setconf/versions)
-
 Setconf is a small utility for changing settings in configuration textfiles.
 
 It has no dependencies except the built-in Python modules.
@@ -11,6 +9,9 @@ It has no dependencies except the built-in Python modules.
 Both Python 2 and Python 3 are supported.
 
 Pull requests are welcome.
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg?columns=3)](https://repology.org/project/setconf/versions)
+
 
 Compile time features
 ---------------------
