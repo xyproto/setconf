@@ -6,11 +6,9 @@ Setconf is a small utility for changing settings in configuration textfiles.
 
 It has no dependencies except the built-in Python modules.
 
-Both Python 2 and Python 3 are supported.
-
 Pull requests are welcome.
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg?columns=3)](https://repology.org/project/setconf/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/setconf.svg?columns=4)](https://repology.org/project/setconf/versions)
 
 
 Compile time features
