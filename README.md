@@ -20,7 +20,6 @@ TODO
 ----
 
 * A flag for changing the n'th occurence.
-* A cleaner way to handle arguments, without adding an external dependency.
 * A flag for commenting out keys (adding "# ")
 * A flag for removing a value instead of using `''`.
 * A flag for removing both the key and the value.
