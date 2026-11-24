@@ -63,6 +63,10 @@ SINGLE_LINE_COMMENTS = [b"#", b"//", b"--"]
 MULTI_LINE_COMMENTS = [b"/*"]
 
 
+def native_newlines(data):
+    return data.replace(b"\n", NL)
+
+
 def parts(line, including_assignment=True):
     """Return the key and value parts of a line, if there is an assignment there.
     May include the assignment as part of the key."""
@@ -214,16 +218,16 @@ def uncomment(lines, key, value=None):
 
 
 def test_uncomment():
-    testcontent = b"""y = 1
+    testcontent = native_newlines(b"""y = 1
 // x = 42
   #CONFIG_EVERYTHING=y
 z := 9
-"""
-    testcontent_changed = b"""y = 1
+""")
+    testcontent_changed = native_newlines(b"""y = 1
 // x = 42
   CONFIG_EVERYTHING="ABSOLUTELY NOT"
 z := 9
-"""
+""")
     passes = True
     splitted = testcontent.split(NL)
     splitted = uncomment(splitted, "CONFIG_EVERYTHING")
@@ -267,18 +271,22 @@ def change(lines, key, value, define=False):
 
 
 def test_change():
-    testcontent = b"""LIGHTS =    ON
-bananas= not present
-tea := yes
-    randombob    :ok
-
-"""
-    testcontent_changed = b"""LIGHTS = off
-bananas= not present
-tea := yes
-    randombob    :ok
-
-"""
+    testcontent = NL.join([
+        b"LIGHTS =    ON",
+        b"bananas= not present",
+        b"tea := yes",
+        b"    randombob    :ok",
+        b"",
+        b"",
+    ])
+    testcontent_changed = NL.join([
+        b"LIGHTS = off",
+        b"bananas= not present",
+        b"tea := yes",
+        b"    randombob    :ok",
+        b"",
+        b"",
+    ])
     passes = True
     splitted = testcontent.split(NL)
     elements = change(splitted, "LIGHTS", "off")
@@ -495,16 +503,16 @@ def test_changefile():
 
 def test_changefile_uncomment():
     # Test data
-    testcontent = b"""#   y = 1
+    testcontent = native_newlines(b"""#   y = 1
 // x = 42
   #DESTROY_EVERYTHING=y
 # z  :=  123
-"""
-    testcontent_changed = b"""  y = 2
+""")
+    testcontent_changed = native_newlines(b"""  y = 2
 x = 9000
   #DESTROY_EVERYTHING=y
 z  := 7
-"""
+""")
     filename = mkstemp()[1]
     # Write the testfile
     with open(filename, 'wb') as f:
@@ -526,10 +534,10 @@ z  := 7
 
 def test_changefile_uncomment_kernel():
     # Test data
-    testcontent = b"""# CONFIG_KERNEL_XZ is not set
-"""
-    testcontent_changed = b"""CONFIG_KERNEL_XZ=y
-"""
+    testcontent = native_newlines(b"""# CONFIG_KERNEL_XZ is not set
+""")
+    testcontent_changed = native_newlines(b"""CONFIG_KERNEL_XZ=y
+""")
     filename = mkstemp()[1]
     # Write the testfile
     with open(filename, 'wb') as f:
@@ -547,8 +555,8 @@ def test_changefile_uncomment_kernel():
 
 
 def test_changefile_undefine():
-    testcontent = b"#define A 1\n#define B 2\n#define C 3\n"
-    testcontent_changed = b"#define A 1\n// #define B 2\n#define C 3\n"
+    testcontent = native_newlines(b"#define A 1\n#define B 2\n#define C 3\n")
+    testcontent_changed = native_newlines(b"#define A 1\n// #define B 2\n#define C 3\n")
     filename = mkstemp()[1]
     with open(filename, 'wb') as f:
         f.write(testcontent)
@@ -582,7 +590,7 @@ def change_multiline(data, key, value, endstring=NL, verbose=True, searchfrom=0,
     else:
         endpos = len(data) - 1
     before = data[:startpos]
-    between = data[startpos:endpos + 1]
+    between = data[startpos:endpos + len(endstring)]
 
     linestartpos = data[:startpos].rfind(NL) + 1
     line = data[linestartpos:endpos + 1]
@@ -614,8 +622,8 @@ def test_change_multiline():
     if not passes:
         print("FAIL1")
     # test 2
-    testcontent = bs('blabla\nOST=(a\nb)\n\nblabla\nÆØÅ')
-    testcontent_changed = bs('blabla\nOST=(c d)\n\nblabla\nÆØÅ')
+    testcontent = native_newlines(bs('blabla\nOST=(a\nb)\n\nblabla\nÆØÅ'))
+    testcontent_changed = native_newlines(bs('blabla\nOST=(c d)\n\nblabla\nÆØÅ'))
     a = change_multiline(testcontent, "OST", "(c d)", ")")
     b = testcontent_changed
     passes = passes and a == b
@@ -630,8 +638,8 @@ def test_change_multiline():
     if not passes:
         print("FAIL3")
     # test 4
-    testcontent = b"\n"
-    testcontent_changed = b"\n"
+    testcontent = NL
+    testcontent_changed = NL
     a = change_multiline(testcontent, "blablañ", "ost")
     b = testcontent_changed
     passes = passes and a == b
@@ -654,7 +662,7 @@ def test_change_multiline():
     if not passes:
         print("FAIL6")
     # test 7
-    testcontent = b"a=(1, 2, 3\nb=(7, 8, 9)"
+    testcontent = native_newlines(b"a=(1, 2, 3\nb=(7, 8, 9)")
     testcontent_changed = b"a=(4, 5, 6)"
     a = change_multiline(testcontent, "a", "(4, 5, 6)", ")")
     b = testcontent_changed
@@ -662,23 +670,23 @@ def test_change_multiline():
     if not passes:
         print("FAIL7")
     # test 8
-    testcontent = b"a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)"
-    testcontent_changed = b"a=(0, 0, 0)\nb=(4, 5, 6)\nc=(7, 8, 9)"
+    testcontent = native_newlines(b"a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)")
+    testcontent_changed = native_newlines(b"a=(0, 0, 0)\nb=(4, 5, 6)\nc=(7, 8, 9)")
     a = change_multiline(testcontent, "b", "(4, 5, 6)", ")")
     b = testcontent_changed
     passes = passes and a == b
     if not passes:
         print("FAIL8")
     # test 9
-    testcontent = b"a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n"
-    testcontent_changed = b"a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n"
+    testcontent = native_newlines(b"a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n")
+    testcontent_changed = native_newlines(b"a=(0, 0, 0)\nb=(1\n2\n3\n)\nc=(7, 8, 9)\n\n")
     a = change_multiline(testcontent, "b", "(4, 5, 6)", "]", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
     if not passes:
         print("FAIL9")
     # test 10
-    testcontent = bs("""
+    testcontent = native_newlines(bs("""
 source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
         "maniadrive.desktop"
         "ñlicense.txt"
@@ -690,8 +698,8 @@ md5sums=('5592eaf4b8c4012edcd4f0fc6e54c09c'
 
 build() {
   cd "$srcdir/ManiaDrive-$pkgver-linux-i386"
-""")
-    testcontent_changed = bs("""
+"""))
+    testcontent_changed = native_newlines(bs("""
 source=("http://prdownloads.sourceforge.net/maniadrive/ManiaDrive-$pkgver-linux-i386.tar.gz"
         "maniadrive.desktop"
         "ñlicense.txt"
@@ -700,24 +708,24 @@ md5sums=('123abc' 'abc123')
 
 build() {
   cd "$srcdir/ManiaDrive-$pkgver-linux-i386"
-""")
+"""))
     a = change_multiline(testcontent, "md5sums", "('123abc' 'abc123')", ")", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
     if not passes:
         print("FAIL10")
     # test 11
-    testcontent = b"x=(0, 0, 0)\nCHEESE\nz=2\n"
-    testcontent_changed = b"x=(4, 5, 6)\nz=2\n"
+    testcontent = native_newlines(b"x=(0, 0, 0)\nCHEESE\nz=2\n")
+    testcontent_changed = native_newlines(b"x=(4, 5, 6)\nz=2\n")
     a = change_multiline(testcontent, "x", "(4, 5, 6)", "CHEESE", verbose=False)
     b = testcontent_changed
     passes = passes and a == b
     if not passes:
         print("FAIL11")
     # test 12
-    testcontent = b"# md5sum=('abc123')\nmd5sum=('def456')\nmd5sum=('ghi789')\n"
-    testcontent_changed = b"# md5sum=('abc123')\nmd5sum=('OST')\nmd5sum=('ghi789')\n"
-    a = change_multiline(testcontent, "md5sum", "('OST')", "\n", verbose=False)
+    testcontent = native_newlines(b"# md5sum=('abc123')\nmd5sum=('def456')\nmd5sum=('ghi789')\n")
+    testcontent_changed = native_newlines(b"# md5sum=('abc123')\nmd5sum=('OST')\nmd5sum=('ghi789')\n")
+    a = change_multiline(testcontent, "md5sum", "('OST')", NL, verbose=False)
     b = testcontent_changed
     passes = passes and a == b
     if not passes:
@@ -819,10 +827,10 @@ def test_addline():
 
 def test_latin1():
     # Test data
-    testcontent = b64decode(
-        b"SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9Nwo=")
-    testcontent_changed = b64decode(
-        b"SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9NDIK")
+    testcontent = native_newlines(b64decode(
+        b"SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9Nwo="))
+    testcontent_changed = native_newlines(b64decode(
+        b"SGVsbG8sIHRoaXMgaXMgYW4gSVNPLTg4NTktMSBlbmNvZGVkIHRleHQgZmlsZS4gQmzlYuZyIG9n\nIHL4ZHZpbi4KCkFsc28sCng9NDIK"))
 
     filename = mkstemp()[1]
     # Write the testfile
@@ -897,14 +905,14 @@ def tests():
 
 
 def test_uncommentfile():
-    testcontent = b"""#X=opt1
+    testcontent = native_newlines(b"""#X=opt1
 #X=opt2
 #X=opt3
-"""
-    testcontent_changed = b"""#X=opt1
+""")
+    testcontent_changed = native_newlines(b"""#X=opt1
 X=opt2
 #X=opt3
-"""
+""")
     filename = mkstemp()[1]
     with open(filename, 'wb') as f:
         f.write(testcontent)
