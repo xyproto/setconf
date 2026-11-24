@@ -30,6 +30,8 @@ jobs:
 
     - name: Run tests
       shell: bash
+      env:
+        MSYS_NO_PATHCONV: '1'
       run: |
         set -e
         python ./setconf.py --test
